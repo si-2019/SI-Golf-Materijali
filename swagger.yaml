@@ -1,0 +1,82 @@
+swagger: '2.0'
+info:
+  description: API-ji modula Materijali, tim Golf 
+  version: 1.0.0
+  title: Dokumentacija API-ja modula Materijali
+  
+
+# tags are used for organizing operations
+tags:
+- name: Materijali
+  description: CRUD API-ji za materijale
+
+paths:
+  /addMaterijal:
+    post:
+      tags:
+      - Materijali
+      summary: Dodaje materijal u bazu
+      operationId: addMaterijal
+      description: |
+        Upisuje materijal u bazu i vraća njegov
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Id materijala
+          schema:
+            type: integer
+            items:
+              $ref: '#/definitions/Materijal'
+  
+          
+  /getMaterijal/:idPredmet:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja listu materijala za poslani id predmeta
+      operationId: getMaterijalById
+      description: |
+       Dobavljanje materijala iz baze
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: idPredmet
+        description: id predmeta za koga se dobavlja lista materijala
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Dobavljena lista materijala za određeni predmet
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Materijal'
+        
+definitions:
+  Materijal:
+    type: object
+    required:
+    - idMaterijal
+    - idPredmet
+    - idTipMaterijala
+    properties:
+      idMaterijal:
+        type: integer
+        format: int64
+      idPredmet:
+        type: integer
+        format: int64
+      idTipMaterijala:
+        type: integer
+        format: int64
+      datumObjave:
+        type: datetime
+      datumIzmjene:
+        type: datetime
+      objavljeno:
+        type: boolean
+      napomena:
+        type: string
