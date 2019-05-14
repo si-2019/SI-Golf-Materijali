@@ -6,10 +6,4 @@ router.get('/',function(req,res){
     res.send('Samira');
 });
 
-router.get('/ag',function(req,res){
-    db.akademskaGodina.findOne({where:{aktuelna:1}}).then(function(god){res.send(god.naziv)}).catch(function(err){res.send(err);})
-});
-
-
-
 module.exports = router;
