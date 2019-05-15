@@ -36,8 +36,19 @@ router.get('/mojiPredmeti/:idKorisnik', function(req,res){
             res.end(JSON.stringify(greska));
         });
     }
+    else if(uloga=='ASISTENT'){
+        db.predmet.findAll({where: {idAsistent:idKorisnik}}).then(function(predmeti){
+            let resPredmeti = predmeti.map(p => {return {id:p.id, naziv:p.naziv, opis:p.opis}});
+            res.writeHead(200,{"Content-Type":"application/json"});
+            res.end(JSON.stringify(resPredmeti));
+        }).catch(function(err){
+            console.log(err);
+            let greska = {error:"error"};
+            res.end(JSON.stringify(greska));
+        });
+    }
 
-    
+
 })
 
 
