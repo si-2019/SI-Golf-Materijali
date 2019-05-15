@@ -15,6 +15,9 @@ db.tipoviMaterijala = sequelize.import(__dirname+'/TipoviMaterijala.js');
 db.datoteke = sequelize.import(__dirname+'/Datoteke.js');
 db.predmet = sequelize.import(__dirname+'/Predmet.js');
 db.akademskaGodina = sequelize.import(__dirname+'/AkademskaGodina.js');
+db.korisnik = sequelize.import(__dirname + '/Korisnik.js');
+db.mojiPredmeti = sequelize.import(__dirname+'/mojiPredmeti.js');
+db.uloga = sequelize.import(__dirname+'/Uloga.js');
 
 module.exports = db;
 

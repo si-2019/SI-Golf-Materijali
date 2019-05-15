@@ -7,6 +7,9 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+var cors = require('cors');
+app.use(cors());
+
 
 db.sequelize.sync().then(function(){
     console.log("Uspjesno povezano");
