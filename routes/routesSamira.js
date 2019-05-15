@@ -62,6 +62,11 @@ router.get('/mojiPredmeti/:idKorisnik', function(req,res){
             }
         })
     }
+    else{
+        res.writeHead(200,{"Content-Type":"application/json"});
+                        let predmeti = [];
+                       res.end(JSON.stringify(predmeti));
+    }
 
 
 })
