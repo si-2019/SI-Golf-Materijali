@@ -23,6 +23,16 @@ router.get('/provjera/:idKorisnika/:idPredmeta',function(req,res){
     });
 });
 
+router.get('/obrisi/:idKorisnika/:idPredmeta',function(req,res){
+    
+    db.mojiPredmeti.destroy({
+        where: { idKorisnik: idKorisnika, idPredmet: idPredmeta }
+      }).then(rez => {
+          let odgovor = { obrisano: 1 }
+          res.end(JSON.stringify(odgovor));
+    });
+
+});
 
 
 
