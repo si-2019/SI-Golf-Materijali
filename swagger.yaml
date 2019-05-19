@@ -118,6 +118,31 @@ paths:
             type: array
             items:
               $ref: '#/definitions/TipMaterijala'
+
+  /getTipMaterijala/:idMaterijala:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja tip materijala za poslani id istog
+      operationId: getTipMaterijala
+      description: |
+       Dobavljanje tipa, jednog, materijala iz baze
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: idMaterijal
+        description: id materijala za koji se dobavlja tip materijala
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Dobavljeni tip materijala za poslani materijal
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/TipMaterijala'
         
 definitions:
   Materijal:
