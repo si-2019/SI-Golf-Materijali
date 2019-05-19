@@ -73,9 +73,11 @@ definitions:
         type: integer
         format: int64
       datumObjave:
-        type: datetime
+        type: string
+        format: date-time
       datumIzmjene:
-        type: datetime
+        type: string
+        format: date-time
       objavljeno:
         type: boolean
       napomena:
