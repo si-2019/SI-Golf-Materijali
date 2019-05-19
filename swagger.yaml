@@ -54,6 +54,70 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Materijal'
+
+  /updateMaterijal/idMaterijala:
+    put:
+      tags:
+      - Materijali
+      summary: Mijenja postojeći materijal u bazi
+      operationId: updateMaterijal
+      description: |
+        Mijenja postojeći materijal u bazi
+      consumes:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Materijal koji smo promijenili
+        required: true
+        schema:
+          $ref: '#/definitions/Materijal'
+      responses:
+        200:
+          description: Materijal je update-ovan
+
+  /deleteMaterijal/:idMaterijal:
+    delete:
+      tags:
+      - Materijali
+      summary: Dobavlja listu materijala za poslani id predmeta
+      operationId: deleteMaterijalById
+      description: |
+       Brisanje materijala iz baze
+      produces:
+      - application/json
+      parameters:
+      - name: idMaterijal
+        in: query
+        required: false
+        type: string
+      - name: petId
+        in: path
+        description: Id materijala koji brišemo
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Materijal je obrisan
+          
+  /getTipoviMaterijala:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja listu tipova materijala
+      operationId: getTipoviMaterijala
+      description: |
+       Dobavljanje tipova materijala iz baze
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Dobavljena lista tipova materijala
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TipMaterijala'
         
 definitions:
   Materijal:
