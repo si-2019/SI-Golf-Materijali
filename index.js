@@ -29,7 +29,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-//endpoints(app,db);
+endpoints(app,db);
 
 app.get('/', function(req, res) {
     res.send('GOLF')
