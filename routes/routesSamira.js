@@ -51,7 +51,7 @@ router.get('/mojiPredmeti/:idKorisnik', function(req,res){
                     opis: p.opis
                 }
             })
-            res.json(resPredmeti)
+            res.json({predmeti: resPredmeti})
         }).catch(function(err){
             let greska = {error: "error"}
             res.json(greska)
@@ -70,7 +70,7 @@ router.get('/mojiPredmeti/:idKorisnik', function(req,res){
                     opis: p.opis
                 }
             })
-            res.json(resPredmeti)
+            res.json({predmeti: resPredmeti})
         }).catch(function(err){
             let greska = {error: "error"}
             res.json(greska)
@@ -84,29 +84,30 @@ router.get('/mojiPredmeti/:idKorisnik', function(req,res){
                 idKorisnik: idKorisnik
             }
         }).then(function(korisnici){
+
+            let promises = []
            for(let i=0 ; i<korisnici.length ; i++){
-                db.predmet.findOne({
+                let noviPromise = db.predmet.findOne({
                     attributes: ['id','naziv','opis'],
                     where: {
                         id: korisnici[i].idPredmet
                     }
-                }).then(function(p){
-                    let pr = {
-                        id: p.id,
-                        naziv: p.naziv,
-                        opis: p.opis
-                    }
-                    predmeti.push(pr)
-                    if(i==korisnici.length-1){
-                        res.json(predmeti)
-                    }
                 })
+                promises.push(noviPromise)
             }
+            Promise.all(promises).then(function(pred){
+                for(let i=0 ; i<pred.length ; i++){
+                    predmeti.push({id:pred[i].id,naziv:pred[i].naziv,opis:pred[i].opis});
+                    if(i==pred.length-1){
+                        res.json({predmeti:predmeti})
+                    }
+                }
+            })
         })
     }
     else{
         let predmeti = []
-        res.json(predmeti)             
+        res.json({predmeti: predmeti})          
     }
 })
 
@@ -144,35 +145,35 @@ router.get('/predmeti/:ciklus/:odsjek/:semestar', function(req,res){
                 }
             }).then(function(p){
                 if(p.length==0){
-                    res.json(predmeti)
+                    res.json({predmeti: predmeti})
                 }
+                let promises = []
                 for(let i = 0 ; i<p.length ; i++){
-                    db.predmet.findOne({
+                    let noviPromise = db.predmet.findOne({
                         attributes: ['id','naziv','opis'], 
                         where: {
                             id: p[i].idPredmet
                         }
-                    }).then(function(pr){
-                        let predmet={
-                            id: pr.id,
-                            naziv: pr.naziv,
-                            opis: pr.opis
-                        }
-                        predmeti.push(predmet)
-                        if(i==p.length-1){
-                            res.json(predmeti)
-                        }
                     })
+                    promises.push(noviPromise)
                 }
+                Promise.all(promises).then(function(pred){
+                    for(let i=0 ; i<pred.length ; i++){
+                        predmeti.push({id:pred[i].id,naziv:pred[i].naziv,opis:pred[i].opis});
+                        if(i==pred.length-1){
+                            res.json({predmeti:predmeti})
+                        }
+                    }
+                })
             }).catch(function(err){
-                    res.json(predmeti)
+                res.json({predmeti: predmeti})
             })
         }
         else{                               
-            res.json(predmeti);
+            res.json({predmeti: predmeti})
         }
     }).catch(function(err){
-        res.json(predmeti);
+        res.json({predmeti: predmeti})
     })
 })
 
