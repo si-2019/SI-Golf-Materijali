@@ -21,5 +21,8 @@ db.uloga = sequelize.import(__dirname+'/Uloga.js');
 db.odsjek = sequelize.import(__dirname+'/Odsjek.js');
 db.odsjek_predmet=sequelize.import(__dirname+'/odsjek_predmet.js');
 
+db.predmet.belongsToMany(db.korisnik,{as:'korisnici',through:'mojiPredmeti',foreignKey:'idPredmet'});
+db.korisnik.belongsToMany(db.predmet,{as:'predmeti',through:'mojiPredmeti',foreignKey:'idKorisnik'});
+
 module.exports = db;
 

@@ -10,7 +10,7 @@ router.get('/dajPrivilegije/:idKorisnika/:idPredmeta',function(req,res){
     let idKorisnika = req.params.idKorisnika;
     let idPredmeta = req.params.idPredmeta;
     db.predmet.findOne({where :{id:idPredmeta}}).then(function(p){ 
-        if(p.idAsistent == idKorisnika || p.idProfesor == idKorisnika || p.idAsistent == null || p.idProfesor == null) {  
+        if((p.idAsistent != null && p.idAsistent == idKorisnika) || (p.idProfesor != null && p.idProfesor == idKorisnika )) {  
             let odg = {privilegija:1}
             res.end(JSON.stringify(odg));
         }
