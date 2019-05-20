@@ -177,7 +177,7 @@ router.get('/predmeti/:ciklus/:odsjek/:semestar', function(req,res){
     })
 })
 
-router.get('/dodajMojPredmet/:idKorisnika/:idPredmeta', function(req, res){
+router.post('/dodajMojPredmet/:idKorisnika/:idPredmeta', function(req, res){
 
     let idKorisnika = req.params.idKorisnika
     let idPredmeta = req.params.idPredmeta
