@@ -25,6 +25,9 @@ router.get('/provjera/:idKorisnika/:idPredmeta',function(req,res){
 
 router.get('/obrisi/:idKorisnika/:idPredmeta',function(req,res){
     
+    let idKorisnika = req.params.idKorisnika;
+    let idPredmeta = req.params.idPredmeta;
+
     db.mojiPredmeti.destroy({
         where: { idKorisnik: idKorisnika, idPredmet: idPredmeta }
       }).then(rez => {
