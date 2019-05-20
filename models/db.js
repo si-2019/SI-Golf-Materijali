@@ -18,6 +18,8 @@ db.akademskaGodina = sequelize.import(__dirname+'/AkademskaGodina.js');
 db.korisnik = sequelize.import(__dirname + '/Korisnik.js');
 db.mojiPredmeti = sequelize.import(__dirname+'/mojiPredmeti.js');
 db.uloga = sequelize.import(__dirname+'/Uloga.js');
+db.odsjek = sequelize.import(__dirname+'/Odsjek.js');
+db.odsjek_predmet=sequelize.import(__dirname+'/odsjek_predmet.js');
 
 module.exports = db;
 
