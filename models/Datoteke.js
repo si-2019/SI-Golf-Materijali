@@ -18,6 +18,10 @@ module.exports = function(sequelize, DataTypes) {
     datoteka: {
       type: "BLOB",
       allowNull: true
+    },
+    naziv: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     }
   }, {
     tableName: 'Datoteke'
