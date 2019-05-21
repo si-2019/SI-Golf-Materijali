@@ -177,5 +177,35 @@ router.get('/predmeti/:ciklus/:odsjek/:semestar', function(req,res){
     })
 })
 
+router.post('/dodajMojPredmet/:idKorisnika/:idPredmeta', function(req, res){
+
+    let idKorisnika = req.params.idKorisnika
+    let idPredmeta = req.params.idPredmeta
+
+    db.predmet.findOne({
+        where: {
+            id:idPredmeta
+        }
+    }).then(function(pred){
+        if(pred){
+            db.korisnik.findOne({
+                where: {
+                    id: idKorisnika
+                }
+            }).then(function(kor){
+                if(kor){
+                    kor.addPredmeti(pred)
+                    res.json({message:'OK'})
+                }
+                else{
+                    res.json({error:'greska'})
+                }
+            })
+        }
+        else{
+            res.json({error:'greska'})
+        }
+    })
+})
 
 module.exports = router;
