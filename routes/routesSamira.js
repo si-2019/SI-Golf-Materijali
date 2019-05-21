@@ -86,7 +86,7 @@ router.get('/mojiPredmeti/:idKorisnik', function(req,res){
         }).then(function(korisnici){
 
             let promises = []
-           for(let i=0 ; i<korisnici.length ; i++){
+            for(let i=0 ; i<korisnici.length ; i++){
                 let noviPromise = db.predmet.findOne({
                     attributes: ['id','naziv','opis'],
                     where: {
@@ -98,10 +98,8 @@ router.get('/mojiPredmeti/:idKorisnik', function(req,res){
             Promise.all(promises).then(function(pred){
                 for(let i=0 ; i<pred.length ; i++){
                     predmeti.push({id:pred[i].id,naziv:pred[i].naziv,opis:pred[i].opis});
-                    if(i==pred.length-1){
-                        res.json({predmeti:predmeti})
-                    }
                 }
+                res.json({predmeti:predmeti})
             })
         })
     }
@@ -160,10 +158,8 @@ router.get('/predmeti/:ciklus/:odsjek/:semestar', function(req,res){
                 Promise.all(promises).then(function(pred){
                     for(let i=0 ; i<pred.length ; i++){
                         predmeti.push({id:pred[i].id,naziv:pred[i].naziv,opis:pred[i].opis});
-                        if(i==pred.length-1){
-                            res.json({predmeti:predmeti})
-                        }
                     }
+                    res.json({predmeti:predmeti})
                 })
             }).catch(function(err){
                 res.json({predmeti: predmeti})
@@ -204,6 +200,24 @@ router.post('/dodajMojPredmet/:idKorisnika/:idPredmeta', function(req, res){
         }
         else{
             res.json({error:'greska'})
+        }
+    })
+})
+
+router.get('/sedmice/:semestar', function(req, res){
+    
+    let semestar = parseInt(req.params.semestar)
+    let datumPocetka;
+    db.akademskaGodina.findOne({
+        where: {
+            aktuelna: '1'
+        }
+    }).then(function(ag){
+        if(semestar%2 == 0){
+            datumPocetka = new Date(ag.pocetak_ljetnog_semestra)
+        }
+        else{
+
         }
     })
 })
