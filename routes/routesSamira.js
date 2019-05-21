@@ -1,4 +1,5 @@
 const express = require('express')
+const moment = require('moment')
 const router = express.Router()
 const db = require('../models/db.js')
 
@@ -217,8 +218,18 @@ router.get('/sedmice/:semestar', function(req, res){
             datumPocetka = new Date(ag.pocetak_ljetnog_semestra)
         }
         else{
-
+            datumPocetka = new Date(ag.pocetak_zimskog_semestra)
         }
+        let sedmice = []
+        for (let i=0; i<16; i++){
+            sedmice.push({
+                pocetakSedmice: moment(datumPocetka).startOf('week').add(1+i*7,'days').format('DD.MM.YYYY'),
+                krajSedmice: moment(datumPocetka).startOf('week').add(7+i*7,'days').format('DD.MM.YYYY')
+            })
+        }
+        res.json({sedmice:sedmice})
+    }).catch(function(err){
+        res.json({message:'error'})
     })
 })
 
