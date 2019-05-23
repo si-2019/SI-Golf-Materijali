@@ -93,7 +93,7 @@ router.get('/dajOPredmetu/:idPredmet', function(req, res){
          //console.log(p[i].idMaterijal)
          let pomocni
          pomocni = db.datoteke.findOne({where :{idMaterijal:p[i].idMaterijal}})
-         //console.log({ovo_je_pomocni:pomocni.naziv})
+         //console.log({ovo_je_pomocni:pomocni})
          promise.push(pomocni);
          //console.log(promise.naziv);
        }
@@ -110,18 +110,44 @@ router.get('/dajOPredmetu/:idPredmet', function(req, res){
    })
 })
 
-{/*router.get('/dajObjave/:idPredmet', function(req, res){
-    let idPredmet = req.params.idPredmet
+router.get('/dajObjave/:idPredmet', function(req, res){
+    /* let idPredmet = req.params.idPredmet
     let file =  []
-    for(let i = 1; i <= 16; i++){
-        db.materijal.findAll({where :{idPredmet:idPredmet, idTipMaterijala:1, sedmica:i}}).then(function(p){
-            for(let j = 0; j < p.length; j++)
-                console.log(p[j].idMaterijal)
-
-            res.json({file:p})
+    for(let i = 1; i <= 16; i++){ 
+        db.materijal.findAll({attributes: ['idMaterijal', 'sedmica'], where: {idPredmet:idPredmet, tipMaterijala:1, sedmica:i}}).then(function(p){
+            let promise = []
+            //console.log(p.length)
+            for(let j = 0; j < p.length; j++){
+              //console.log({sedmica_for:p[j].sedmica})
+              //console.log("Usao")
+              let pomocni
+              pomocni = db.datoteke.findOne({attributes: ['naziv'], where :{idMaterijal:p[j].idMaterijal}})
+              //console.log({ovo_je_pomocni:pomocni.idMaterijal})
+              promise.push(pomocni);
+              //console.log(p[j].sedmica);
+            }
+            Promise.all(promise, promise1).then(function(q){
+                //console.log({sedmice:q[0].sedmica})
+                for(let j = 0; j < q.length; j++){
+                    file.push({naziv:q[j].naziv, sedmica:p[j].sedmica});
+                    //file.push("prvi.pdf")
+                    //console.log("usaoo");
+                }
+                 //console.log(file)
+            })
         })
+    } 
+    console.log(file.naziv)
+    res.json({file:file}) */
+    let idPredmet = req.params.idPredmet
+    let file = []
+    let promis = []
+    for(let i = 1; i <= 16; i++){
+        let pom = db.materijal.findAll({where :{idPredmet:idPredmet, tipMaterijala:1, sedmica:i}})
+        console.log(pom.idMaterijal)
     }
-})*/}
+    res.json({file:file})
+})
 
 
 
