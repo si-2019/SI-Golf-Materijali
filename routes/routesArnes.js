@@ -75,4 +75,54 @@ router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica', function(req,res){
 })
 
 
+router.get('/dajMaterijaleZaProfesora/:idPredmet/:sedmica', function(req,res){
+    
+    let predmet = req.params.idPredmet
+    let sedmica = req.params.sedmica
+
+    db.akademskaGodina.findOne({
+        attributes: ['id'],
+        where: {
+            aktuelna: '1'
+        }
+    }).then(function(ag){
+        db.materijal.findAll({
+            where: {
+                idPredmet: predmet,
+                sedmica: sedmica,
+                idAkademskaGodina: ag.id
+            }
+        }).then(function(materijali){
+            let promises = []
+            for(let i=0; i<materijali.length; i++){
+                let noviPromise = db.datoteke.findAll({
+                    attributes: ['naziv'],
+                    where:{
+                        idMaterijal: materijali[i].idMaterijal
+                    }
+                })
+                promises.push(noviPromise);
+            }
+            Promise.all(promises).then(function(datoteke){
+                let objave = []
+                for(let i=0; i<datoteke.length;i++){
+                    let files = []
+                    for(let j=0; j<datoteke[i].length; j++){
+                        files.push(datoteke[i][j].naziv)
+                    }
+                    objave.push({
+                        naziv:materijali[i].naziv,
+                        opis: materijali[i].napomena,
+                        datum: materijali[i].datumObjave,
+                        objavljeno: materijali[i].objavljeno,
+                        datoteke: files
+                    })
+                }
+                res.json(objave)
+            })
+        })
+    })
+})
+
+
 module.exports = router;
