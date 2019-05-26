@@ -5,7 +5,8 @@ module.exports = function(sequelize, DataTypes) {
     idDatoteke: {
       type: DataTypes.INTEGER(10),
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     idMaterijal: {
       type: DataTypes.INTEGER(10),
@@ -16,7 +17,7 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     datoteka: {
-      type: "BLOB",
+      type: DataTypes.BLOB('long'),
       allowNull: true
     },
     naziv: {
