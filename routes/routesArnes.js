@@ -153,5 +153,31 @@ router.get('/dajLiteraturu/:idPredmet', function(req, res){
    })
 })
 
+router.get('/dajOPredmetu/:idPredmet', function(req, res){
+    let idPredmet = req.params.idPredmet;
+    let file = [];
+   db.materijal.findAll({attributes: ['idMaterijal'], where: {idPredmet:idPredmet, tipMaterijala:1}}).then(function(p){
+       let promise = []
+       for(let i = 0; i < p.length; i++){
+         //console.log(p[i].idMaterijal)
+         let pomocni
+         pomocni = db.datoteke.findOne({where :{idMaterijal:p[i].idMaterijal}})
+         //console.log({ovo_je_pomocni:pomocni})
+         promise.push(pomocni);
+         //console.log(promise.naziv);
+       }
+       Promise.all(promise).then(function(q){
+           
+           for(let i = 0; i < q.length; i++){
+               file.push({naziv:q[i].naziv});
+               //file.push("prvi.pdf")
+               //console.log("usaoo");
+           }
+            //console.log(file)
+           res.json({file:file})
+       })
+   })
+})
+
 
 module.exports = router;
