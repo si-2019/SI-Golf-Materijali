@@ -37,9 +37,9 @@ router.get('/obrisi/:idKorisnika/:idPredmeta',function(req,res){
 
 });
 
-router.get('/skiniFileOPredmetu/:idPredmeta/:nazivFila',function(req,res){
+router.get('/prikaziFileOPredmetu/:idPredmeta/:nazivFile',function(req,res){
     let predmet = req.params.idPredmeta;
-    let file = req.params.nazivFila;
+    let file = req.params.nazivFile;
     db.materijal.findAll({where:{idPredmet:predmet, objavljeno:1}})
         .then((result)=>{
             //console.log(result);
