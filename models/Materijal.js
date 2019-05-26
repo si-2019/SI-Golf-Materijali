@@ -5,7 +5,8 @@ module.exports = function(sequelize, DataTypes) {
     idMaterijal: {
       type: DataTypes.INTEGER(10),
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     idPredmet: {
       type: DataTypes.INTEGER(10),
@@ -32,7 +33,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     napomena: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     objavljeno: {
@@ -42,8 +43,28 @@ module.exports = function(sequelize, DataTypes) {
     sedmica: {
       type: DataTypes.INTEGER(11),
       allowNull: true
+    },
+    tipMaterijala: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true
+    },
+    idAkademskaGodina: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
+      references: {
+        model: 'AkademskaGodina',
+        key: 'id'
+      }
+    },
+    naziv: {
+      type: DataTypes.STRING(255),
+      allowNull: false
     }
-  }, {
+  }, 
+  {
     tableName: 'Materijal'
   });
 };
+
+
+
