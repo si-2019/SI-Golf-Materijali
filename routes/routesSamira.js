@@ -230,7 +230,8 @@ router.get('/sedmice/:semestar', function(req, res){
         for (let i=0; i<16; i++){
             sedmice.push({
                 pocetakSedmice: moment(datumPocetka).startOf('week').add(1+i*7,'days').format('DD.MM.YYYY'),
-                krajSedmice: moment(datumPocetka).startOf('week').add(7+i*7,'days').format('DD.MM.YYYY')
+                krajSedmice: moment(datumPocetka).startOf('week').add(7+i*7,'days').format('DD.MM.YYYY'),
+                redniBrojSedmice: i + 1
             })
         }
         res.json({sedmice:sedmice})

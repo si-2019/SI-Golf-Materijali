@@ -26,7 +26,7 @@ router.get('/dajPrivilegije/:idKorisnika/:idPredmeta',function(req,res){
 
 
 router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica', function(req,res){
-
+    //console.log("Usao")
     let predmet = req.params.idPredmet
     let sedmica = req.params.sedmica
 
@@ -68,7 +68,8 @@ router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica', function(req,res){
                         datoteke: files
                     })
                 }
-                res.json(objave)
+                console.log("usaoo")
+                res.end(JSON.s)
             })
         })
     })
@@ -127,9 +128,9 @@ router.get('/dajMaterijaleZaProfesora/:idPredmet/:sedmica', function(req,res){
 router.get('/dajLiteraturu/:idPredmet', function(req, res){
     
     let idPredmet = req.params.idPredmet;
-    //console.log(idPredmet)
+    console.log("Usao")
     let file = [];
-    db.materijal.findAll({where: {tipMaterijala:1, idPredmet:idPredmet}}).then(function(p){
+    db.materijal.findAll({where: {tipMaterijala:2, idPredmet:idPredmet}}).then(function(p){
        let promise = []
        //console.log(p.length)
        for(let i = 0; i < p.length; i++){
