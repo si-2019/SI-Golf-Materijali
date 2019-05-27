@@ -68,8 +68,8 @@ router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica', function(req,res){
                         datoteke: files
                     })
                 }
-                console.log("usaoo")
-                res.end(JSON.s)
+                //console.log("usaoo")
+                res.json({objave:objave})
             })
         })
     })
@@ -119,7 +119,7 @@ router.get('/dajMaterijaleZaProfesora/:idPredmet/:sedmica', function(req,res){
                         datoteke: files
                     })
                 }
-                res.json(objave)
+                res.json({objave:objave})
             })
         })
     })
