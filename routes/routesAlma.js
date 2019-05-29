@@ -18,9 +18,10 @@ router.get('/getAkademskaGodina/', function(req, res){
         datumPocetkaAG = new Date(ag.pocetak.zimskog_semestra)
     }
     let prethodne2AG = []
-    for(let i = 1; i < 3; ++i){
+    for(let i = 0; i < 2; ++i){
         prethodne2AG.push({
-            prethodna: datumPocetkaAG.getYear() - i
+            prviDioAk: datumPocetkaAG.getYear() - i,
+            drugiDioAk: datumPocetkaAG.getYear() - i - 1
         })
     }
     res.json({getAkademskaGodina:prethodne2AG})
