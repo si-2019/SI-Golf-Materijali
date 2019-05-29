@@ -9,24 +9,25 @@ router.get('/',function(req,res){
 router.get('/getAkademskaGodina/', function(req, res){
 
     let datumPocetkaAG;
+    let datumKrajaAG;
     db.akademskaGodina.findOne({
         where: {
             aktuelna: '1'
         }
     }).then(function(ag){
 
-        datumPocetkaAG = new Date(ag.pocetak.zimskog_semestra)
-    }
-    let prethodne2AG = []
-    for(let i = 0; i < 2; ++i){
+        datumPocetkaAG = new Date(ag.pocetak_zimskog_semestra);
+        datumKrajaAG = new Date(ag.kraj_ljetnog_semestra);
+    let prethodne2AG = [];   
+        
         prethodne2AG.push({
-            prviDioAk: datumPocetkaAG.getYear() - i,
-            drugiDioAk: datumPocetkaAG.getYear() - i - 1
-        })
-    }
-    res.json({getAkademskaGodina:prethodne2AG})
-    )}.catch(function(err){
-        res.json({message: 'error'})
+            prviDioAk: datumPocetkaAG.getFullYear() - 1,
+            drugiDioAk: datumKrajaAG.getFullYear() - 1
+        });
+        
+    res.json({prethodne2AG:prethodne2AG});
+    }).catch(function(err){
+        res.json({message: err})
     })
 })
 
