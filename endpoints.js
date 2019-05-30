@@ -27,10 +27,6 @@ const initializeEndpoints = (app,db) => {
 	// PUT: updateMaterijal/{id}
 	// DELETE: deleteMaterijal/{id}
 
-	// GET: getTipoviMaterijala
-
-	// GET: getTipMaterijala
-
 	// POST: addDatoteka
 	// GET: getDatoteka/{id}
 	// PUT: updateDatoteka/{id}
