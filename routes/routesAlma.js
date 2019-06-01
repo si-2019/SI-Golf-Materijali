@@ -6,26 +6,21 @@ router.get('/',function(req,res){
     res.send('Alma');
 });
 
-router.get('/getAkademskaGodina/', function(req, res){
+router.get('/getAkademskaGodina', function(req, res){
 
     let datumPocetkaAG;
     let datumKrajaAG;
-    db.akademskaGodina.findOne({
-        where: {
-            aktuelna: '1'
-        }
+    db.akademskaGodina.findAll({
+        limit: 3,
+        order: [
+            ['pocetak_zimskog_semestra','DESC']
+        ],
     }).then(function(ag){
-
-        datumPocetkaAG = new Date(ag.pocetak_zimskog_semestra);
-        datumKrajaAG = new Date(ag.kraj_ljetnog_semestra);
-    let prethodne2AG = [];   
-        
-        prethodne2AG.push({
-            prviDioAk: datumPocetkaAG.getFullYear() - 1,
-            drugiDioAk: datumKrajaAG.getFullYear() - 1
-        });
-        
-    res.json({prethodne2AG:prethodne2AG});
+        let godine = []
+        for(let i=0; i<ag.length; i++){
+            godine.push(ag[i].naziv)
+        }
+       res.json({godine:godine})
     }).catch(function(err){
         res.json({message: err})
     })
