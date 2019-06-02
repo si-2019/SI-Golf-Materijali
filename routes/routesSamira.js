@@ -256,4 +256,17 @@ router.get('/semestar/:idPredmeta', function(req,res){
     })
 })
 
+router.get('/nazivTrenutneAkademskeGodine', function(req,res){
+    db.akademskaGodina.findOne({
+        where:{
+            aktuelna: '1'
+        },
+        attributes: ['naziv']
+    }).then(function(ag){
+        res.json({naziv:ag.naziv})
+    }).catch(function(err){
+        res.json({message:'error'})
+    })
+})
+
 module.exports = router;
