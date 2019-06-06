@@ -33,9 +33,13 @@ router.get('/ObrisiDatoteku/:nazivDatoteke/:idMaterijala', function(req, res){
 
     db.Datoteke.destroy({
         where:{ naziv: naziv_datoteka, idMaterijal: id_materijal }
-    }).then(result => {
-        let odgovor = { obrisano: 200 }
-        res.end(JSON.stringify(odgovor));
+    }).then(function(result){
+        if(result){
+            res.json({message:'OK'})
+        }
+        else{
+            res.json{(error: 'greska')}
+        }
     })
 })
 
