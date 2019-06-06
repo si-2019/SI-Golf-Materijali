@@ -26,15 +26,15 @@ router.get('/getAkademskaGodina', function(req, res){
     })
 })
 
-router.get('/ObrisiDatoteku/:idDatoteke/:idMaterijala', function(req, res){
+router.get('/ObrisiDatoteku/:nazivDatoteke/:idMaterijala', function(req, res){
 
-    let id_datoteka = req.params.idDatoteke;
+    let naziv_datoteka = req.params.nazivDatoteke;
     let id_materijal = req.params.idMaterijala;
 
     db.Datoteke.destroy({
-        where:{ idDatoteke: id_datoteka, idMaterijal: id_materijal }
+        where:{ naziv: naziv_datoteka, idMaterijal: id_materijal }
     }).then(result => {
-        let odgovor = { obrisano: 1 }
+        let odgovor = { obrisano: 200 }
         res.end(JSON.stringify(odgovor));
     })
 })
