@@ -26,19 +26,32 @@ router.get('/getAkademskaGodina', function(req, res){
     })
 })
 
-router.get('/ObrisiDatoteku/:nazivDatoteke/:idMaterijala', function(req, res){
+router.get('/ObrisiDatotekuOPredmetu/:nazivDatoteke/:idPredmeta/:tipMaterijala', function(req, res){
 
     let naziv_datoteka = req.params.nazivDatoteke;
-    let id_materijal = req.params.idMaterijala;
+    let id_predmet = req.params.idPredmeta;
+    let tip_materijala = req.params.tipMaterijala;
 
-    db.Datoteke.destroy({
-        where:{ naziv: naziv_datoteka, idMaterijal: id_materijal }
-    }).then(function(result){
-        if(result){
-            res.json({message:'OK'})
+    db.Materijal.findAll({
+        where:{
+            idPredmet: id_predmet,
+            tipMaterijala: tip_materijala
         }
-        else{
-            res.json{(error: 'greska')}
+    }).then(function(m){
+        if(m){
+            db.Datoteke.destroy({
+                where:{
+                    naziv: naziv_datoteka,
+                    idMaterijal: m.idMaterijal
+                }
+            }).then(function(result){
+                if(result){
+                    res.json({message: 'OK' })
+                }
+                else{
+                    res.json({ error: 'greska' })
+                }
+            })
         }
     })
 })
