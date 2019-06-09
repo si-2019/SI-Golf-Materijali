@@ -1,7 +1,10 @@
 const express = require('express')
 const moment = require('moment')
+const fs = require('fs')
 const router = express.Router()
 const db = require('../models/db.js')
+const multer = require('multer')
+
 
 router.get('/', function(req,res){
     res.send('Samira')
@@ -267,6 +270,97 @@ router.get('/nazivTrenutneAkademskeGodine', function(req,res){
     }).catch(function(err){
         res.json({message:'error'})
     })
+})
+
+router.delete('/obrisiMaterijal', function(req,res){
+    let idPredmeta = req.query.predmet
+    let idMaterijala = req.query.materijal 
+
+    let promises = []
+    let promis = db.materijal.destroy(
+        {
+            where: {
+                idPredmet: idPredmeta,
+                idMaterijal: idMaterijala
+            }
+        }
+    )
+    promises.push(promis)
+    let promis2= db.datoteke.destroy({
+        where: {
+            idMaterijal: idMaterijala
+        }
+    })
+    promises.push(promis2)
+    Promise.all(promises).then(function(rez){
+        let odgovor = {obrisano: 1}
+        res.json(odgovor)
+    })
+    
+})
+
+router.get('/dajFile', (req, res) => {
+    console.log(req.query)
+    db.datoteke.findOne({
+        where: {
+            idDatoteke: req.query.id
+        }
+    }).then(fajl => {
+        console.log(fajl)
+        fs.writeFileSync('./downloads/'+fajl.naziv, fajl.datoteka)
+        res.download('./downloads/'+fajl.naziv)
+    }).catch(error => {
+        res.send(error)
+    })
+})
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, './uploads')
+    },
+    filename: function (req, file, cb){
+        cb(null, file.originalname)
+    }
+})
+
+const upload = multer({
+    storage: storage,
+    fileFilter: function(req, file, cb){
+        return cb(null, true)
+    }
+    
+}).any()
+
+router.post('/dodajMaterijal', function(req,res){
+    upload(req, res, function(err){
+    let promises = []
+    db.materijal.create({
+        idPredmet: req.body.idPredmet,
+        idTipMaterijala: req.body.tipMaterijala,
+        datumObjave: Date.now(),
+        datumIzmjene: Date.now(),
+        napomena: req.body.napomena,
+        objavljeno: req.body.objavljeno,
+        sedmica: req.body.sedmica,
+        tipMaterijala: req.body.tipMaterijala,
+        idAkademskaGodina: req.body.idAkademskaGodina,
+        naziv: req.body.naziv
+    }).then(function(mat){
+            for(let i=0; i<req.files.length; i++){
+            let file = fs.readFileSync('./uploads/'+req.files[i].originalname)
+            let noviPromise = db.datoteke.create({
+                datoteka: file,
+                naziv: req.files[i].originalname,
+                idMaterijal: mat.idMaterijal
+            })
+            promises.push(noviPromise)
+            }
+            Promise.all(promises).then(function(rez){
+                let odgovor = {dodano: 1}
+                res.json(odgovor)
+        })
+            })
+})
 })
 
 module.exports = router;

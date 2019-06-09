@@ -4,6 +4,8 @@ const sequelize = new Sequelize("TYQcLL35gV","TYQcLL35gV","BLysSj9ZrP",{host:'37
     }
 });
 
+
+
 const db = {}
 
 db.Sequelize = Sequelize;  
