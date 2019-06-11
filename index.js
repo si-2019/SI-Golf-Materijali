@@ -2,6 +2,11 @@ var express = require('express')
 var app = express()
 var mysql = require('mysql');
 const db = require('./models/db');
+const YAML = require("yamljs");
+const swaggerUi = require("swagger-ui-express");
+
+const swaggerDocument = YAML.load('./swagger.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
