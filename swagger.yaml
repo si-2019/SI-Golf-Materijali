@@ -1,0 +1,403 @@
+---
+swagger: "2.0"
+info:
+  description: API-ji modula Materijali, tim Golf
+  version: 1.2.0
+  title: Dokumentacija API-ja modula Materijali
+tags:
+- name: Materijali
+  description: Modul ponajprije omogućava studentima pregled materijala svih predmeta koje nude odsjeci po semestru svih ciklusa studija; pristup predmetima koje sluša preko početne stranice gdje ih može dodavati i brisati sa iste; pregled objavljenih materijala, preuzmanje istih. Profesoru, koji je također korisnik IS-a, ovaj modul omogućava dodavanje materijala te, ukoliko je potrebno, dodavanje poruke/upute uz dodani materijal.
+paths:
+  /dodajMaterijal/:idMaterijala/:idPredmeta/:idTipMaterijala/:napomena/:objavljeno/:sedmica/:idAkGod/:nazivObjave/:nazivDatoteke:
+    post:
+      tags:
+      - Materijali
+      summary: Dodaje materijal u bazu
+      description: |
+        Upisuje materijal u bazu
+      operationId: dodajMaterijal
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        200:
+          description: Dodano
+          schema:
+            type: integer
+  /getMaterijal/:idPredmet:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja listu materijala za poslani id predmeta
+      description: |
+        Dobavljanje materijala iz baze
+      operationId: getMaterijalById
+      produces:
+      - application/json
+      parameters:
+      - name: idPredmet
+        in: query
+        description: id predmeta za koga se dobavlja lista materijala
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Dobavljena lista materijala za određeni predmet
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Materijal'
+  /updateMaterijal/idMaterijala:
+    put:
+      tags:
+      - Materijali
+      summary: Mijenja postojeći materijal u bazi
+      description: |
+        Mijenja postojeći materijal u bazi
+      operationId: updateMaterijal
+      consumes:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Materijal koji smo promijenili
+        required: true
+        schema:
+          $ref: '#/definitions/Materijal'
+      responses:
+        200:
+          description: Materijal je update-ovan
+  /obrisiMaterijal/:idMaterijal/:idPredmet:
+    delete:
+      tags:
+      - Materijali
+      summary: Briše materijal za poslani id materijala
+      description: |
+        Brisanje materijala iz baze
+      operationId: deleteMaterijalById
+      produces:
+      - application/json
+      parameters:
+      - name: idMaterijal
+        in: query
+        description: Id materijala koji brišemo
+        required: true
+        type: integer
+        format: int64
+      - name: idPredmet
+        in: query
+        description: Id predmeta za koji brišemo materijal
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Obrisano
+  /dajMaterijaleZaStudenta/:idPredmet/:sedmica:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja materijale za određenu sedmicu, poslani id predmeta
+      description: |
+        Dobavljanje materijala iz baze
+      operationId: dajMaterijaleZaStudenta
+      produces:
+      - application/json
+      parameters:
+      - name: idPredmet
+        in: query
+        description: id predmeta za koga se dobavljaju materijali
+        required: true
+        type: integer
+        format: int64
+      - name: sedmica
+        in: query
+        description: sedmica za koju dobavljamo materijale
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Dobavljeni materijali za određeni predmet, u odrešenoj sedmici
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Materijal'
+  /dajMaterijaleZaProfesora/:idPredmet/:sedmica:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja materijale za određenu sedmicu, poslani id predmeta
+      description: |
+        Dobavljanje materijala iz baze
+      operationId: dajMaterijaleZaProfesora
+      produces:
+      - application/json
+      parameters:
+      - name: idPredmet
+        in: query
+        description: id predmeta za koga se dobavljaju materijali
+        required: true
+        type: integer
+        format: int64
+      - name: sedmica
+        in: query
+        description: sedmica za koju dobavljamo materijale
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Dobavljeni materijali za određeni predmet, u odrešenoj sedmici
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Materijal'
+  /dajLiteraturu/:idPredmet:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja literaturu za poslani id predmeta
+      description: |
+        Dobavljanje materijala iz baze
+      operationId: dajLiteraturu
+      produces:
+      - application/json
+      parameters:
+      - name: idPredmet
+        in: query
+        description: id predmeta za koga se dobavlja literatura
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Dobavljena literatura za određeni predmet
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Materijal'
+  /dodajFile/:idMaterijal:
+    post:
+      tags:
+      - Materijali
+      summary: Dodaje datoteku u bazu
+      description: |
+        Upisuje datoteku u bazu
+      operationId: dodajFile
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        200:
+          description: Id materijala
+          schema:
+            type: integer
+  /dajFile/:idDatoteka:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja datoteku za poslani id datoteke
+      description: |
+        Dobavljanje datoteke iz baze
+      operationId: dajFile
+      produces:
+      - application/json
+      parameters:
+      - name: idDatoteka
+        in: query
+        description: id datoteke koja se dobavlja
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Dobavljena datoteka
+    $ref: '#/definitions/Datoteka'
+  /obrisiMojPredmet/:idKorisnika/:idPredmeta:
+    delete:
+      tags:
+      - Materijali
+      summary: Briše moj predmet za poslani id predmeta i korisnika
+      description: |
+        Brisanje datoteke iz baze
+      operationId: obrisiMojPredmet
+      produces:
+      - application/json
+      parameters:
+      - name: idKorisnika
+        in: query
+        required: false
+        type: string
+      - name: idPredmeta
+        in: path
+        description: Id predmeta koji brišemo sa liste moji predmeti
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Moj predmet je obrisan
+  /mojiPredmeti/:idKorisnik:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja moje predmete za poslani id korisnika
+      description: |
+        Dobavljanje mojih predmeta iz baze
+      operationId: mojiPredmeti
+      produces:
+      - application/json
+      parameters:
+      - name: idKorisnik
+        in: query
+        description: id korisnika za koji se dobavlja
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Dobavljeno
+    $ref: '#/definitions/Datoteka'
+  /dajOPredmetuPrethodna/:idPredmet/:idGodina:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja napomenu/opis za sekciju o predmetu za neku od prethodnih ak. god.
+      description: |
+        Dobavljanje materijala iz baze
+      operationId: dajOPredmetuPrethodna
+      produces:
+      - application/json
+      parameters:
+      - name: idPredmet
+        in: query
+        description: id predmeta za koga se dobavlja
+        required: true
+        type: integer
+        format: int64
+      - name: idGodina
+        in: query
+        description: id godine za koju se dobavlja
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Dobavljena lista materijala za određeni predmet
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Materijal'
+  /dajLiteraturuPrethodna/:idPredmet/:idGodina:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja napomenu/opis za sekciju literatura za neku od prethodnih ak. god.
+      description: |
+        Dobavljanje materijala iz baze
+      operationId: dajLiteraturuPrethodna
+      produces:
+      - application/json
+      parameters:
+      - name: idPredmet
+        in: query
+        description: id predmeta za koga se dobavlja
+        required: true
+        type: integer
+        format: int64
+      - name: idGodina
+        in: query
+        description: id godine za koju se dobavlja
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Dobavljena lista materijala za određeni predmet
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Materijal'
+  /prikaziFileOPredmetu/:idPredmeta/:nazivFile:
+    get:
+      tags:
+      - Materijali
+      summary: Dobavlja file za sekciju o predmetu
+      description: |
+        Dobavljanje materijala iz baze
+      operationId: prikaziFileOPredmetu
+      produces:
+      - application/json
+      parameters:
+      - name: idPredmet
+        in: query
+        description: id predmeta za koga se dobavlja
+        required: true
+        type: integer
+        format: int64
+      - name: nazivFile
+        in: query
+        description: naziv file-a koji se dobavlja
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Dobavljena lista materijala za određeni predmet
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Datoteka'
+definitions:
+  Materijal:
+    type: object
+    required:
+    - idMaterijal
+    - idPredmet
+    - idTipMaterijala
+    properties:
+      idMaterijal:
+        type: integer
+        format: int64
+      idPredmet:
+        type: integer
+        format: int64
+      idTipMaterijala:
+        type: integer
+        format: int64
+      datumObjave:
+        type: string
+        format: date-time
+      datumIzmjene:
+        type: string
+        format: date-time
+      objavljeno:
+        type: boolean
+      napomena:
+        type: string
+  Datoteka:
+    type: object
+    required:
+    - file
+    - idDatoteke
+    properties:
+      idDatoteke:
+        type: integer
+        format: int64
+      file:
+        type: string
+        format: base64
+  MojPredmet:
+    type: object
+    required:
+    - idKorisnika
+    - idPredmeta
+    properties:
+      idPredmeta:
+        type: integer
+        format: int64
+      idKorisnika:
+        type: integer
+        format: int64
