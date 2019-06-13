@@ -4,7 +4,7 @@
   "description": "1. Alma Hodžić (vođa tima)\r   2. Irma Osmanković\r   3. Arnes Rogo\r   4. Lejla Begić\r   5. Samira Mamela\r   6. Amila Mujak\r   7. Ramiz Zaketović\r   8. Asim Aganović",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
     "start": "node index.js"
   },
   "repository": {
