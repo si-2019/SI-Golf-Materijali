@@ -4,6 +4,7 @@ var mysql = require('mysql');
 const db = require('./models/db');
 const YAML = require("yamljs");
 const swaggerUi = require("swagger-ui-express");
+var PORT = process.env.PORT || 31907;
 
 const swaggerDocument = YAML.load('./swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -49,7 +50,7 @@ app.get('/', function(req, res) {
 
 
 app.listen(31907, function() {
-    console.log("Pokrenuto na portu 31907")
+    console.log("Pokrenuto na portu" + PORT);
 });
 
 module.exports = app;
