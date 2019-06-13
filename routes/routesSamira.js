@@ -22,7 +22,7 @@ router.get('/uloga/:idKorisnik', function (req,res){
         db.uloga.findOne({
             attributes: ['naziv'], 
             where: {
-                id: k.idUloga
+                idUloga: k.idUloga
             }
         }).then(function(u){
             let odg = {uloga: u.naziv}
@@ -214,13 +214,14 @@ router.post('/dodajMojPredmet/:idKorisnika/:idPredmeta', function(req, res){
     })
 })
 
-router.get('/sedmice/:semestar', function(req, res){
+router.get('/sedmice/:semestar/:naziv', function(req, res){
     
     let semestar = parseInt(req.params.semestar)
+    let naziv = decodeURIComponent(req.params.naziv)
     let datumPocetka;
     db.akademskaGodina.findOne({
         where: {
-            aktuelna: '1'
+            naziv: naziv
         }
     }).then(function(ag){
         if(semestar%2 == 0){
@@ -264,17 +265,17 @@ router.get('/nazivTrenutneAkademskeGodine', function(req,res){
         where:{
             aktuelna: '1'
         },
-        attributes: ['naziv']
+        attributes: ['id', 'naziv']
     }).then(function(ag){
-        res.json({naziv:ag.naziv})
+        res.json({id: ag.id, naziv:ag.naziv})
     }).catch(function(err){
         res.json({message:'error'})
     })
 })
 
-router.delete('/obrisiMaterijal', function(req,res){
-    let idPredmeta = req.query.predmet
-    let idMaterijala = req.query.materijal 
+router.delete('/obrisiMaterijal/:predmet/:materijal', function(req,res){
+    let idPredmeta = req.params.predmet
+    let idMaterijala = req.params.materijal 
 
     let promises = []
     let promis = db.materijal.destroy(
@@ -300,7 +301,7 @@ router.delete('/obrisiMaterijal', function(req,res){
 })
 
 router.get('/dajFile', (req, res) => {
-    console.log(req.query)
+
     db.datoteke.findOne({
         where: {
             idDatoteke: req.query.id
@@ -333,16 +334,17 @@ const upload = multer({
 
 router.post('/dodajMaterijal', function(req,res){
     upload(req, res, function(err){
+        console.log(req.body, "napomena")
     let promises = []
     db.materijal.create({
         idPredmet: req.body.idPredmet,
-        idTipMaterijala: req.body.tipMaterijala,
+        idTipMaterijala: req.body.idTipMaterijala,
         datumObjave: Date.now(),
         datumIzmjene: Date.now(),
         napomena: req.body.napomena,
-        objavljeno: req.body.objavljeno,
+        objavljeno: typeof(req.body.objavljeno) == 'undefined' || req.body.objavljeno!='on',
         sedmica: req.body.sedmica,
-        tipMaterijala: req.body.tipMaterijala,
+        tipMaterijala: req.body.idTipMaterijala,
         idAkademskaGodina: req.body.idAkademskaGodina,
         naziv: req.body.naziv
     }).then(function(mat){
@@ -356,11 +358,54 @@ router.post('/dodajMaterijal', function(req,res){
             promises.push(noviPromise)
             }
             Promise.all(promises).then(function(rez){
-                let odgovor = {dodano: 1}
-                res.json(odgovor)
+                res.redirect("http://localhost:3000/Golf/stranicaPredmeta/2018%2F19/8/257")
         })
             })
 })
 })
+
+router.post('/updateMaterijal', function(req,res){
+    upload(req, res, function(err){
+    let promises = []
+    db.materijal.update({
+        datumIzmjene: Date.now(),
+        napomena: req.body.napomena,
+        objavljeno: typeof(req.body.objavljeno) == 'undefined' || req.body.objavljeno!='on',
+        naziv: req.body.naziv
+    },
+    {
+        where: {
+            idMaterijal: req.body.idMaterijal
+        }
+    }).then(function(mat){
+            for(let i=0; i<req.files.length; i++){
+            let file = fs.readFileSync('./uploads/'+req.files[i].originalname)
+            let noviPromise = db.datoteke.create({
+                datoteka: file,
+                naziv: req.files[i].originalname,
+                idMaterijal: mat.idMaterijal
+            })
+            promises.push(noviPromise)
+            }
+            Promise.all(promises).then(function(rez){
+                res.redirect("http://localhost:3000/Golf/stranicaPredmeta/2018%2F19/8/257")
+        })
+            })
+})
+})
+
+router.delete('/obrisiFile/:file', function(req,res){
+    let idFile = req.params.file
+
+    db.datoteke.destroy({
+        where: {
+            idDatoteke: idFile
+        }
+    }).then(function(rez){
+        res.json({obrisano:1})
+    })
+    
+})
+
 
 module.exports = router;

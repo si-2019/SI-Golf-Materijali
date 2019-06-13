@@ -11,11 +11,11 @@ router.get('/dajPrivilegije/:idKorisnika/:idPredmeta',function(req,res){
     let idPredmeta = req.params.idPredmeta;
     db.predmet.findOne({where :{id:idPredmeta}}).then(function(p){ 
         if((p.idAsistent != null && p.idAsistent == idKorisnika) || (p.idProfesor != null && p.idProfesor == idKorisnika )) {  
-            let odg = {privilegija:1}
+            let odg = {privilegija:true}
             res.end(JSON.stringify(odg));
         }
         else{
-            let odg = {privilegija:0}
+            let odg = {privilegija:false}
             res.end(JSON.stringify(odg));
         }
     }).catch(function(err){
@@ -25,15 +25,15 @@ router.get('/dajPrivilegije/:idKorisnika/:idPredmeta',function(req,res){
 })
 
 
-router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica', function(req,res){
-    //console.log("Usao")
+router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica/:naziv', function(req,res){
     let predmet = req.params.idPredmet
     let sedmica = req.params.sedmica
+    let naziv = decodeURIComponent(req.params.naziv)
 
     db.akademskaGodina.findOne({
         attributes: ['id'],
         where: {
-            aktuelna: '1'
+            naziv: naziv
         }
     }).then(function(ag){
         db.materijal.findAll({
@@ -41,7 +41,8 @@ router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica', function(req,res){
                 idPredmet: predmet,
                 sedmica: sedmica,
                 objavljeno: true,
-                idAkademskaGodina: ag.id
+                idAkademskaGodina: ag.id,
+                tipMaterijala: 3
             }
         }).then(function(materijali){
             let promises = []
@@ -62,13 +63,13 @@ router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica', function(req,res){
                         files.push(datoteke[i][j].naziv)
                     }
                     objave.push({
+                        id:materijali[i].idMaterijal,
                         naziv:materijali[i].naziv,
                         opis: materijali[i].napomena,
                         datum: materijali[i].datumObjave,
                         datoteke: files
                     })
                 }
-                //console.log("usaoo")
                 res.json({objave:objave})
             })
         })
@@ -76,28 +77,30 @@ router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica', function(req,res){
 })
 
 
-router.get('/dajMaterijaleZaProfesora/:idPredmet/:sedmica', function(req,res){
+router.get('/dajMaterijaleZaProfesora/:idPredmet/:sedmica/:naziv', function(req,res){
     
     let predmet = req.params.idPredmet
     let sedmica = req.params.sedmica
+    let naziv = decodeURIComponent(req.params.naziv)
 
     db.akademskaGodina.findOne({
         attributes: ['id'],
         where: {
-            aktuelna: '1'
+            naziv:naziv
         }
     }).then(function(ag){
         db.materijal.findAll({
             where: {
                 idPredmet: predmet,
                 sedmica: sedmica,
-                idAkademskaGodina: ag.id
+                idAkademskaGodina: ag.id,
+                tipMaterijala: 3
             }
         }).then(function(materijali){
             let promises = []
             for(let i=0; i<materijali.length; i++){
                 let noviPromise = db.datoteke.findAll({
-                    attributes: ['naziv'],
+                    attributes: ['idDatoteke','naziv'],
                     where:{
                         idMaterijal: materijali[i].idMaterijal
                     }
@@ -109,9 +112,10 @@ router.get('/dajMaterijaleZaProfesora/:idPredmet/:sedmica', function(req,res){
                 for(let i=0; i<datoteke.length;i++){
                     let files = []
                     for(let j=0; j<datoteke[i].length; j++){
-                        files.push(datoteke[i][j].naziv)
+                        files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
                     }
                     objave.push({
+                        id:materijali[i].idMaterijal,
                         naziv:materijali[i].naziv,
                         opis: materijali[i].napomena,
                         datum: materijali[i].datumObjave,
@@ -125,71 +129,189 @@ router.get('/dajMaterijaleZaProfesora/:idPredmet/:sedmica', function(req,res){
     })
 })
 
-router.get('/dajLiteraturu/:idPredmet', function(req, res){
+router.get('/dajLiteraturuZaStudenta/:idPredmet/:naziv', function(req, res){
     
-    let idPredmet = req.params.idPredmet;
-    //console.log("Usao")
-    let file = [];
-    db.materijal.findAll({where: {tipMaterijala:2, idPredmet:idPredmet}}).then(function(p){
-       let promise = []
-       //console.log(p.length)
-       for(let i = 0; i < p.length; i++){
-         //console.log(p[i].idMaterijal)
-         let pomocni = []
-         pomocni = db.datoteke.findOne({where :{idMaterijal:p[i].idMaterijal}})
-         //console.log({ovo_je_pomocni:pomocni.naziv})
-         promise.push(pomocni);
-         //console.log("Usao u literetaturu")
-       }
-       Promise.all(promise).then(function(q){
-           
-           for(let i = 0; i < q.length; i++){
-               file.push({naziv:q[i].naziv});
-               //file.push("prvi.pdf")
-               //console.log("usaoo");
-           }
-            //console.log(file)
-           res.json({file:file})
-       })
-   })
-})
+    let predmet = req.params.idPredmet
+    let naziv = decodeURIComponent(req.params.naziv)
 
-router.get('/dajOPredmetu/:idPredmet', function(req, res){
-    let idPredmet = req.params.idPredmet;
-    let file = [];
-   db.materijal.findAll({attributes: ['idMaterijal'], where: {idPredmet:idPredmet, tipMaterijala:1}}).then(function(p){
-       let promise = []
-       for(let i = 0; i < p.length; i++){
-         //console.log(p[i].idMaterijal)
-         let pomocni
-         pomocni = db.datoteke.findOne({where :{idMaterijal:p[i].idMaterijal}})
-         //console.log({ovo_je_pomocni:pomocni})
-         promise.push(pomocni);
-         //console.log(promise.naziv);
-       }
-       Promise.all(promise).then(function(q){
-           
-           for(let i = 0; i < q.length; i++){
-               file.push({naziv:q[i].naziv});
-               //file.push("prvi.pdf")
-               //console.log("usaoo");
-           }
-            //console.log(file)
-           res.json({file:file})
-       })
-   })
-})
-
-router.get('obrisiLiteraturu/:idPredmet/:nazivFile', function(req, res){
-    let idPredmet = req.params.idPredmet;
-    let nazivFile = req.params.nazivFile;
-    db.materijal.findAll({where :{idPredmet:idPredmet, tipMaterijala:2}}).then(function(p){
-        for(let i = 0; i < p.length; i++){
-            db.datoteke.destroy({where :{idMaterijal:p[i].idMaterijal, nazivFile:nazivFile}})
+    db.akademskaGodina.findOne({
+        attributes: ['id'],
+        where: {
+            naziv:naziv
         }
+    }).then(function(ag){
+        db.materijal.findAll({
+            where: {
+                idPredmet: predmet,
+                idAkademskaGodina: ag.id,
+                tipMaterijala: 2,
+                objavljeno: true
+            }
+        }).then(function(materijali){
+            let promises = []
+            for(let i=0; i<materijali.length; i++){
+                let noviPromise = db.datoteke.findAll({
+                    attributes: ['idDatoteke','naziv'],
+                    where:{
+                        idMaterijal: materijali[i].idMaterijal
+                    }
+                })
+                promises.push(noviPromise);
+            }
+            Promise.all(promises).then(function(datoteke){
+                let objave = []
+                for(let i=0; i<datoteke.length;i++){
+                    let files = []
+                    for(let j=0; j<datoteke[i].length; j++){
+                        files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
+                    }
+                    objave.push({
+                        id:materijali[i].idMaterijal,
+                        naziv:materijali[i].naziv,
+                        opis: materijali[i].napomena,
+                        datum: materijali[i].datumObjave,
+                        objavljeno: materijali[i].objavljeno,
+                        datoteke: files
+                    })
+                }
+                console.log(objave)
+                res.json({objave:objave})
+            })
+        })
     })
 
 })
+
+router.get('/dajLiteraturuZaProfesora/:idPredmet/:naziv', function(req, res){
+
+    let predmet = req.params.idPredmet
+    let naziv = decodeURIComponent(req.params.naziv)
+
+    db.akademskaGodina.findOne({
+        attributes: ['id'],
+        where: {
+            naziv:naziv
+        }
+    }).then(function(ag){
+        db.materijal.findAll({
+            where: {
+                idPredmet: predmet,
+                idAkademskaGodina: ag.id,
+                tipMaterijala: 2
+            }
+        }).then(function(materijali){
+            let promises = []
+            for(let i=0; i<materijali.length; i++){
+                let noviPromise = db.datoteke.findAll({
+                    attributes: ['idDatoteke', 'naziv'],
+                    where:{
+                        idMaterijal: materijali[i].idMaterijal
+                    }
+                })
+                promises.push(noviPromise);
+            }
+            Promise.all(promises).then(function(datoteke){
+                let objave = []
+                for(let i=0; i<datoteke.length;i++){
+                    let files = []
+                    for(let j=0; j<datoteke[i].length; j++){
+                        files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
+                    }
+                    objave.push({
+                        id:materijali[i].idMaterijal,
+                        naziv:materijali[i].naziv,
+                        opis: materijali[i].napomena,
+                        datum: materijali[i].datumObjave,
+                        objavljeno: materijali[i].objavljeno,
+                        datoteke: files
+                    })
+                }
+                res.json({objave:objave})
+            })
+        })
+    })
+
+})
+
+
+router.get('/dajOPredmetu/:idPredmet/:naziv', function(req, res){
+    let predmet = req.params.idPredmet
+    let naziv = decodeURIComponent(req.params.naziv)
+
+    db.akademskaGodina.findOne({
+        attributes: ['id'],
+        where: {
+            naziv:naziv
+        }
+    }).then(function(ag){
+        db.materijal.findAll({
+            where: {
+                idPredmet: predmet,
+                idAkademskaGodina: ag.id,
+                tipMaterijala: 1,
+                objavljeno: true
+            }
+        }).then(function(materijali){
+            if(materijali.length==0){
+                db.materijal.create({
+                    idPredmet: predmet,
+                    idTipMaterijala: 1,
+                    datumObjave: Date.now(),
+                    datumIzmjene: Date.now(),
+                    napomena: "",
+                    objavljeno: 1,
+                    tipMaterijala: 1,
+                    idAkademskaGodina: ag.id,
+                    naziv: ""
+                }).then(function(mat){
+                    let objave = []
+                    objave.push({
+                        id:mat.idMaterijal,
+                        naziv:mat.naziv,
+                        opis: mat.napomena,
+                        datum: mat.datumObjave,
+                        objavljeno: mat.objavljeno,
+                        datoteke: []
+                    })
+                    res.json({objave:objave})
+                })
+            }
+            else{
+            let promises = []
+            for(let i=0; i<materijali.length; i++){
+                let noviPromise = db.datoteke.findAll({
+                    attributes: ['idDatoteke','naziv'],
+                    where:{
+                        idMaterijal: materijali[i].idMaterijal
+                    }
+                })
+                promises.push(noviPromise);
+            }
+            Promise.all(promises).then(function(datoteke){
+                let objave = []
+                for(let i=0; i<datoteke.length;i++){
+                    let files = []
+                    for(let j=0; j<datoteke[i].length; j++){
+                        files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
+                    }
+                    objave.push({
+                        id:materijali[i].idMaterijal,
+                        naziv:materijali[i].naziv,
+                        opis: materijali[i].napomena,
+                        datum: materijali[i].datumObjave,
+                        objavljeno: materijali[i].objavljeno,
+                        datoteke: files
+                    })
+                }
+                res.json({objave:objave})
+            })
+        }
+        })
+    })
+ 
+})
+
+
 
 
 module.exports = router;
