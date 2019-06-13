@@ -49,8 +49,6 @@ app.get('/', function(req, res) {
 })
 
 
-app.listen(31907, function() {
-    console.log("Pokrenuto na portu" + PORT);
-});
+app.listen(PORT,function(){ console.log('server successfully started on port '+PORT); });
 
 module.exports = app;
