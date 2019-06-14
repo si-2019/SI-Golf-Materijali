@@ -12,18 +12,18 @@ router.get('/dajPrivilegije/:idKorisnika/:idPredmeta',function(req,res){
     db.predmet.findOne({where :{id:idPredmeta}}).then(function(p){ 
         if((p.idAsistent != null && p.idAsistent == idKorisnika) || (p.idProfesor != null && p.idProfesor == idKorisnika )) {  
             let odg = {privilegija:true}
-            res.end(JSON.stringify(odg));
+           res.json(odg)
         }
         else{
             let odg = {privilegija:false}
-            res.end(JSON.stringify(odg));
+            res.json(odg)
         }
     }).catch(function(err){
-        let greska = {privilegija:2}
-        res.end(JSON.stringify(greska))
+        let greska = {message: "error"}
+        res.json(greska)
+        console.log(err)
         });
 })
-
 
 router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica/:naziv', function(req,res){
     let predmet = req.params.idPredmet
@@ -36,43 +36,53 @@ router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica/:naziv', function(req,r
             naziv: naziv
         }
     }).then(function(ag){
-        db.materijal.findAll({
-            where: {
-                idPredmet: predmet,
-                sedmica: sedmica,
-                objavljeno: true,
-                idAkademskaGodina: ag.id,
-                tipMaterijala: 3
-            }
-        }).then(function(materijali){
-            let promises = []
-            for(let i=0; i<materijali.length; i++){
-                let noviPromise = db.datoteke.findAll({
-                    attributes: ['naziv'],
-                    where:{
-                        idMaterijal: materijali[i].idMaterijal
-                    }
-                })
-                promises.push(noviPromise);
-            }
-            Promise.all(promises).then(function(datoteke){
-                let objave = []
-                for(let i=0; i<datoteke.length;i++){
-                    let files = []
-                    for(let j=0; j<datoteke[i].length; j++){
-                        files.push(datoteke[i][j].naziv)
-                    }
-                    objave.push({
-                        id:materijali[i].idMaterijal,
-                        naziv:materijali[i].naziv,
-                        opis: materijali[i].napomena,
-                        datum: materijali[i].datumObjave,
-                        datoteke: files
-                    })
+        if(ag){
+            db.materijal.findAll({
+                where: {
+                    idPredmet: predmet,
+                    sedmica: sedmica,
+                    objavljeno: true,
+                    idAkademskaGodina: ag.id,
+                    tipMaterijala: 3
                 }
-                res.json({objave:objave})
+            }).then(function(materijali){
+                let promises = []
+                for(let i=0; i<materijali.length; i++){
+                    let noviPromise = db.datoteke.findAll({
+                        attributes: ['naziv'],
+                        where:{
+                            idMaterijal: materijali[i].idMaterijal
+                        }
+                    })
+                    promises.push(noviPromise);
+                }
+                Promise.all(promises).then(function(datoteke){
+                    let objave = []
+                    for(let i=0; i<datoteke.length;i++){
+                        let files = []
+                        for(let j=0; j<datoteke[i].length; j++){
+                            files.push(datoteke[i][j].naziv)
+                        }
+                        objave.push({
+                            id:materijali[i].idMaterijal,
+                            naziv:materijali[i].naziv,
+                            opis: materijali[i].napomena,
+                            datum: materijali[i].datumIzmjene,
+                            datoteke: files
+                        })
+                    }
+                    res.json({objave:objave})
+                })
+            }).catch(function(err){
+                res.status(400)
+                res.json({error: "error"})
+                console.log(err)
             })
-        })
+        }
+        else{
+            res.status(404)
+            res.json({error: "error"})
+        }
     })
 })
 
@@ -89,44 +99,55 @@ router.get('/dajMaterijaleZaProfesora/:idPredmet/:sedmica/:naziv', function(req,
             naziv:naziv
         }
     }).then(function(ag){
-        db.materijal.findAll({
-            where: {
-                idPredmet: predmet,
-                sedmica: sedmica,
-                idAkademskaGodina: ag.id,
-                tipMaterijala: 3
-            }
-        }).then(function(materijali){
-            let promises = []
-            for(let i=0; i<materijali.length; i++){
-                let noviPromise = db.datoteke.findAll({
-                    attributes: ['idDatoteke','naziv'],
-                    where:{
-                        idMaterijal: materijali[i].idMaterijal
-                    }
-                })
-                promises.push(noviPromise);
-            }
-            Promise.all(promises).then(function(datoteke){
-                let objave = []
-                for(let i=0; i<datoteke.length;i++){
-                    let files = []
-                    for(let j=0; j<datoteke[i].length; j++){
-                        files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
-                    }
-                    objave.push({
-                        id:materijali[i].idMaterijal,
-                        naziv:materijali[i].naziv,
-                        opis: materijali[i].napomena,
-                        datum: materijali[i].datumObjave,
-                        objavljeno: materijali[i].objavljeno,
-                        datoteke: files
-                    })
+        if(ag){
+            db.materijal.findAll({
+                where: {
+                    idPredmet: predmet,
+                    sedmica: sedmica,
+                    idAkademskaGodina: ag.id,
+                    tipMaterijala: 3
                 }
-                res.json({objave:objave})
+            }).then(function(materijali){
+                let promises = []
+                for(let i=0; i<materijali.length; i++){
+                    let noviPromise = db.datoteke.findAll({
+                        attributes: ['idDatoteke','naziv'],
+                        where:{
+                            idMaterijal: materijali[i].idMaterijal
+                        }
+                    })
+                    promises.push(noviPromise);
+                }
+                Promise.all(promises).then(function(datoteke){
+                    let objave = []
+                    for(let i=0; i<datoteke.length;i++){
+                        let files = []
+                        for(let j=0; j<datoteke[i].length; j++){
+                            files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
+                        }
+                        objave.push({
+                            id:materijali[i].idMaterijal,
+                            naziv:materijali[i].naziv,
+                            opis: materijali[i].napomena,
+                            datum: materijali[i].datumIzmjene,
+                            objavljeno: materijali[i].objavljeno,
+                            datoteke: files
+                        })
+                    }
+                    res.json({objave:objave})
+                })
+            }).catch(function(err){
+                res.status(400)
+                res.json({error: "error"})
+                console.log(err)
             })
-        })
+        }
+        else{
+            res.status(404)
+            res.json({error: "error"})
+        }
     })
+
 })
 
 router.get('/dajLiteraturuZaStudenta/:idPredmet/:naziv', function(req, res){
@@ -140,44 +161,53 @@ router.get('/dajLiteraturuZaStudenta/:idPredmet/:naziv', function(req, res){
             naziv:naziv
         }
     }).then(function(ag){
-        db.materijal.findAll({
-            where: {
-                idPredmet: predmet,
-                idAkademskaGodina: ag.id,
-                tipMaterijala: 2,
-                objavljeno: true
-            }
-        }).then(function(materijali){
-            let promises = []
-            for(let i=0; i<materijali.length; i++){
-                let noviPromise = db.datoteke.findAll({
-                    attributes: ['idDatoteke','naziv'],
-                    where:{
-                        idMaterijal: materijali[i].idMaterijal
-                    }
-                })
-                promises.push(noviPromise);
-            }
-            Promise.all(promises).then(function(datoteke){
-                let objave = []
-                for(let i=0; i<datoteke.length;i++){
-                    let files = []
-                    for(let j=0; j<datoteke[i].length; j++){
-                        files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
-                    }
-                    objave.push({
-                        id:materijali[i].idMaterijal,
-                        naziv:materijali[i].naziv,
-                        opis: materijali[i].napomena,
-                        datum: materijali[i].datumObjave,
-                        objavljeno: materijali[i].objavljeno,
-                        datoteke: files
-                    })
+        if(ag){
+            db.materijal.findAll({
+                where: {
+                    idPredmet: predmet,
+                    idAkademskaGodina: ag.id,
+                    tipMaterijala: 2,
+                    objavljeno: true
                 }
-                console.log(objave)
-                res.json({objave:objave})
+            }).then(function(materijali){
+                let promises = []
+                for(let i=0; i<materijali.length; i++){
+                    let noviPromise = db.datoteke.findAll({
+                        attributes: ['idDatoteke','naziv'],
+                        where:{
+                            idMaterijal: materijali[i].idMaterijal
+                        }
+                    })
+                    promises.push(noviPromise);
+                }
+                Promise.all(promises).then(function(datoteke){
+                    let objave = []
+                    for(let i=0; i<datoteke.length;i++){
+                        let files = []
+                        for(let j=0; j<datoteke[i].length; j++){
+                            files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
+                        }
+                        objave.push({
+                            id:materijali[i].idMaterijal,
+                            naziv:materijali[i].naziv,
+                            opis: materijali[i].napomena,
+                            datum: materijali[i].datumIzmjene,
+                            objavljeno: materijali[i].objavljeno,
+                            datoteke: files
+                        })
+                    }
+                    res.json({objave:objave})
+                })
+            }).catch(function(err){
+                res.status(400)
+                res.json({error: "error"})
+                console.log(err)
             })
-        })
+        }
+        else{
+            res.status(404)
+            res.json({error: "error"})
+        }
     })
 
 })
@@ -193,42 +223,52 @@ router.get('/dajLiteraturuZaProfesora/:idPredmet/:naziv', function(req, res){
             naziv:naziv
         }
     }).then(function(ag){
-        db.materijal.findAll({
-            where: {
-                idPredmet: predmet,
-                idAkademskaGodina: ag.id,
-                tipMaterijala: 2
-            }
-        }).then(function(materijali){
-            let promises = []
-            for(let i=0; i<materijali.length; i++){
-                let noviPromise = db.datoteke.findAll({
-                    attributes: ['idDatoteke', 'naziv'],
-                    where:{
-                        idMaterijal: materijali[i].idMaterijal
-                    }
-                })
-                promises.push(noviPromise);
-            }
-            Promise.all(promises).then(function(datoteke){
-                let objave = []
-                for(let i=0; i<datoteke.length;i++){
-                    let files = []
-                    for(let j=0; j<datoteke[i].length; j++){
-                        files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
-                    }
-                    objave.push({
-                        id:materijali[i].idMaterijal,
-                        naziv:materijali[i].naziv,
-                        opis: materijali[i].napomena,
-                        datum: materijali[i].datumObjave,
-                        objavljeno: materijali[i].objavljeno,
-                        datoteke: files
-                    })
+        if(ag){
+            db.materijal.findAll({
+                where: {
+                    idPredmet: predmet,
+                    idAkademskaGodina: ag.id,
+                    tipMaterijala: 2
                 }
-                res.json({objave:objave})
+            }).then(function(materijali){
+                let promises = []
+                for(let i=0; i<materijali.length; i++){
+                    let noviPromise = db.datoteke.findAll({
+                        attributes: ['idDatoteke', 'naziv'],
+                        where:{
+                            idMaterijal: materijali[i].idMaterijal
+                        }
+                    })
+                    promises.push(noviPromise);
+                }
+                Promise.all(promises).then(function(datoteke){
+                    let objave = []
+                    for(let i=0; i<datoteke.length;i++){
+                        let files = []
+                        for(let j=0; j<datoteke[i].length; j++){
+                            files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
+                        }
+                        objave.push({
+                            id:materijali[i].idMaterijal,
+                            naziv:materijali[i].naziv,
+                            opis: materijali[i].napomena,
+                            datum: materijali[i].datumIzmjene,
+                            objavljeno: materijali[i].objavljeno,
+                            datoteke: files
+                        })
+                    }
+                    res.json({objave:objave})
+                })
+            }).catch(function(err){
+                res.status(400)
+                res.json({error: "error"})
+                console.log(err)
             })
-        })
+        }
+        else{
+            res.status(404)
+            res.json({error: "error"})
+        }
     })
 
 })
@@ -244,69 +284,79 @@ router.get('/dajOPredmetu/:idPredmet/:naziv', function(req, res){
             naziv:naziv
         }
     }).then(function(ag){
-        db.materijal.findAll({
-            where: {
-                idPredmet: predmet,
-                idAkademskaGodina: ag.id,
-                tipMaterijala: 1,
-                objavljeno: true
-            }
-        }).then(function(materijali){
-            if(materijali.length==0){
-                db.materijal.create({
+        if(ag){
+            db.materijal.findAll({
+                where: {
                     idPredmet: predmet,
-                    idTipMaterijala: 1,
-                    datumObjave: Date.now(),
-                    datumIzmjene: Date.now(),
-                    napomena: "",
-                    objavljeno: 1,
-                    tipMaterijala: 1,
                     idAkademskaGodina: ag.id,
-                    naziv: ""
-                }).then(function(mat){
-                    let objave = []
-                    objave.push({
-                        id:mat.idMaterijal,
-                        naziv:mat.naziv,
-                        opis: mat.napomena,
-                        datum: mat.datumObjave,
-                        objavljeno: mat.objavljeno,
-                        datoteke: []
-                    })
-                    res.json({objave:objave})
-                })
-            }
-            else{
-            let promises = []
-            for(let i=0; i<materijali.length; i++){
-                let noviPromise = db.datoteke.findAll({
-                    attributes: ['idDatoteke','naziv'],
-                    where:{
-                        idMaterijal: materijali[i].idMaterijal
-                    }
-                })
-                promises.push(noviPromise);
-            }
-            Promise.all(promises).then(function(datoteke){
-                let objave = []
-                for(let i=0; i<datoteke.length;i++){
-                    let files = []
-                    for(let j=0; j<datoteke[i].length; j++){
-                        files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
-                    }
-                    objave.push({
-                        id:materijali[i].idMaterijal,
-                        naziv:materijali[i].naziv,
-                        opis: materijali[i].napomena,
-                        datum: materijali[i].datumObjave,
-                        objavljeno: materijali[i].objavljeno,
-                        datoteke: files
+                    tipMaterijala: 1,
+                    objavljeno: true
+                }
+            }).then(function(materijali){
+                if(materijali.length==0){
+                    db.materijal.create({
+                        idPredmet: predmet,
+                        idTipMaterijala: 1,
+                        datumObjave: Date.now(),
+                        datumIzmjene: Date.now(),
+                        napomena: "",
+                        objavljeno: 1,
+                        tipMaterijala: 1,
+                        idAkademskaGodina: ag.id,
+                        naziv: ""
+                    }).then(function(mat){
+                        let objave = []
+                        objave.push({
+                            id:mat.idMaterijal,
+                            naziv:mat.naziv,
+                            opis: mat.napomena,
+                            datum: mat.datumIzmjene,
+                            objavljeno: mat.objavljeno,
+                            datoteke: []
+                        })
+                        res.json({objave:objave})
+                    }).catch(function(err){
+                        res.status(400)
+                        res.json({error: "error"})
+                        console.log(err)
                     })
                 }
-                res.json({objave:objave})
+                else{
+                    let promises = []
+                    for(let i=0; i<materijali.length; i++){
+                        let noviPromise = db.datoteke.findAll({
+                            attributes: ['idDatoteke','naziv'],
+                            where:{
+                                idMaterijal: materijali[i].idMaterijal
+                            }
+                        })
+                        promises.push(noviPromise);
+                    }
+                    Promise.all(promises).then(function(datoteke){
+                        let objave = []
+                        for(let i=0; i<datoteke.length;i++){
+                            let files = []
+                            for(let j=0; j<datoteke[i].length; j++){
+                                files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
+                            }
+                            objave.push({
+                                id:materijali[i].idMaterijal,
+                                naziv:materijali[i].naziv,
+                                opis: materijali[i].napomena,
+                                datum: materijali[i].datumIzmjene,
+                                objavljeno: materijali[i].objavljeno,
+                                datoteke: files
+                            })
+                        }
+                        res.json({objave:objave})
+                    })
+                }   
             })
         }
-        })
+        else{
+            res.status(404)
+            res.json({error: "error"})
+        }
     })
  
 })
