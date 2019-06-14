@@ -8,8 +8,6 @@ router.get('/',function(req,res){
 
 router.get('/getAkademskaGodina', function(req, res){
 
-    let datumPocetkaAG;
-    let datumKrajaAG;
     db.akademskaGodina.findAll({
         limit: 3,
         order: [
@@ -22,7 +20,9 @@ router.get('/getAkademskaGodina', function(req, res){
         }
        res.json({godine:godine})
     }).catch(function(err){
-        res.json({message: err})
+        res.status(404)
+        res.json({message: "error"})
+        console.log(err)
     })
 })
 

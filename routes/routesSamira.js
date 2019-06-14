@@ -13,12 +13,14 @@ router.get('/', function(req,res){
 router.get('/uloga/:idKorisnik', function (req,res){
 
     let idKorisnik = req.params.idKorisnik;
+
     db.korisnik.findOne({
         attributes: ['idUloga'], 
         where: {
             id: idKorisnik
         }
     }).then(function(k){
+        if(k){
         db.uloga.findOne({
             attributes: ['naziv'], 
             where: {
@@ -29,10 +31,19 @@ router.get('/uloga/:idKorisnik', function (req,res){
             res.json(odg)
         }).catch(function(err){
             let greska = {error: "error"}
+            console.log(err)
+            res.status(400)
             res.json(greska)
         })
+    }
+    else{
+        res.status(400)
+        res.json({error: "error"})
+    }
     }).catch(function(err){
         let greska = {error: "error"}
+        console.log(err)
+        res.status(400)
         res.json(greska)
     })
 })
@@ -65,6 +76,11 @@ router.get('/mojiPredmeti/:idKorisnik', function(req,res){
             }
             res.json({predmeti:predmeti})
         })
+    }).catch(function(err){
+        let greska = {error: "error"}
+        console.log(err)
+        res.status(400)
+        res.json(greska)
     })
 })
 
@@ -89,6 +105,8 @@ router.get('/dajPredmeteZaNastavniAnsambl/:idKorisnika', function(req, res){
             res.json({predmeti: resPredmeti})
         }).catch(function(err){
             let greska = {error: "error"}
+            console.log(err)
+            res.status(400)
             res.json(greska)
         })
     }
@@ -108,6 +126,8 @@ router.get('/dajPredmeteZaNastavniAnsambl/:idKorisnika', function(req, res){
             res.json({predmeti: resPredmeti})
         }).catch(function(err){
             let greska = {error: "error"}
+            console.log(err)
+            res.status(400)
             res.json(greska)
         })
     }
@@ -172,14 +192,23 @@ router.get('/predmeti/:ciklus/:odsjek/:semestar', function(req,res){
                     res.json({predmeti:predmeti})
                 })
             }).catch(function(err){
-                res.json({predmeti: predmeti})
+                let greska = {error: "error"}
+                console.log(err)
+                res.status(400)
+                res.json(greska)
             })
         }
         else{                               
-            res.json({predmeti: predmeti})
+            let greska = {error: "error"}
+            console.log(err)
+            res.status(404)
+            res.json(greska)
         }
     }).catch(function(err){
-        res.json({predmeti: predmeti})
+        let greska = {error: "error"}
+        console.log(err)
+        res.status(400)
+        res.json(greska)
     })
 })
 
@@ -204,13 +233,25 @@ router.post('/dodajMojPredmet/:idKorisnika/:idPredmeta', function(req, res){
                     res.json({message:'OK'})
                 }
                 else{
-                    res.json({error:'greska'})
+                    res.status(404)
+                    res.json({error: "error"})
                 }
+            }).catch(function(err){
+                let greska = {error: "error"}
+                console.log(err)
+                res.status(400)
+                res.json(greska)
             })
         }
         else{
-            res.json({error:'greska'})
+            res.status(404)
+            res.json({error: "error"})
         }
+    }).catch(function(err){
+        let greska = {error: "error"}
+        console.log(err)
+        res.status(400)
+        res.json(greska)
     })
 })
 
@@ -224,25 +265,34 @@ router.get('/sedmice/:semestar/:naziv', function(req, res){
             naziv: naziv
         }
     }).then(function(ag){
-        if(semestar%2 == 0){
-            datumPocetka = new Date(ag.pocetak_ljetnog_semestra)
+        if(ag){
+            if(semestar%2 == 0){
+                datumPocetka = new Date(ag.pocetak_ljetnog_semestra)
+            }
+            else{
+                datumPocetka = new Date(ag.pocetak_zimskog_semestra)
+            }
+            let sedmice = []
+            for (let i=0; i<16; i++){
+                sedmice.push({
+                    pocetakSedmice: moment(datumPocetka).startOf('week').add(1+i*7,'days').format('DD.MM.YYYY'),
+                    krajSedmice: moment(datumPocetka).startOf('week').add(7+i*7,'days').format('DD.MM.YYYY'),
+                    redniBrojSedmice: i + 1
+                })
+            }
+            res.json({sedmice:sedmice})
         }
         else{
-            datumPocetka = new Date(ag.pocetak_zimskog_semestra)
+            res.status(404)
+            res.json({error: "error"})
         }
-        let sedmice = []
-        for (let i=0; i<16; i++){
-            sedmice.push({
-                pocetakSedmice: moment(datumPocetka).startOf('week').add(1+i*7,'days').format('DD.MM.YYYY'),
-                krajSedmice: moment(datumPocetka).startOf('week').add(7+i*7,'days').format('DD.MM.YYYY'),
-                redniBrojSedmice: i + 1
-            })
-        }
-        res.json({sedmice:sedmice})
-    }).catch(function(err){
-        res.json({message:'error'})
+        }).catch(function(err){
+            let greska = {error: "error"}
+            console.log(err)
+            res.status(400)
+            res.json(greska)
+        })
     })
-})
 
 router.get('/semestar/:idPredmeta', function(req,res){
 
@@ -256,7 +306,10 @@ router.get('/semestar/:idPredmeta', function(req,res){
     }).then(function(red){
         res.json({semestar: red.semestar})
     }).catch(function(err){
-        res.json({message: 'error'})
+        let greska = {error: "error"}
+        console.log(err)
+        res.status(400)
+        res.json(greska)
     })
 })
 
@@ -269,7 +322,10 @@ router.get('/nazivTrenutneAkademskeGodine', function(req,res){
     }).then(function(ag){
         res.json({id: ag.id, naziv:ag.naziv})
     }).catch(function(err){
-        res.json({message:'error'})
+        let greska = {error: "error"}
+        console.log(err)
+        res.status(400)
+        res.json(greska)
     })
 })
 
@@ -278,8 +334,7 @@ router.delete('/obrisiMaterijal/:predmet/:materijal', function(req,res){
     let idMaterijala = req.params.materijal 
 
     let promises = []
-    let promis = db.materijal.destroy(
-        {
+    let promis = db.materijal.destroy({
             where: {
                 idPredmet: idPredmeta,
                 idMaterijal: idMaterijala
@@ -294,7 +349,7 @@ router.delete('/obrisiMaterijal/:predmet/:materijal', function(req,res){
     })
     promises.push(promis2)
     Promise.all(promises).then(function(rez){
-        let odgovor = {obrisano: 1}
+        let odgovor = {message: "OK"}
         res.json(odgovor)
     })
     
@@ -307,11 +362,13 @@ router.get('/dajFile', (req, res) => {
             idDatoteke: req.query.id
         }
     }).then(fajl => {
-        console.log(fajl)
         fs.writeFileSync('./downloads/'+fajl.naziv, fajl.datoteka)
         res.download('./downloads/'+fajl.naziv)
     }).catch(error => {
-        res.send(error)
+        let greska = {error: "error"}
+        console.log(err)
+        res.status(400)
+        res.json(greska)
     })
 })
 
@@ -321,90 +378,199 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb){
         cb(null, file.originalname)
-    }
+    },
+    
 })
 
 const upload = multer({
     storage: storage,
     fileFilter: function(req, file, cb){
         return cb(null, true)
+    },
+    limits: {
+        fileSize: 1024*1024*2
     }
-    
 }).any()
 
 router.post('/dodajMaterijal', function(req,res){
     upload(req, res, function(err){
-        console.log(req.body, "napomena")
-    let promises = []
-    db.materijal.create({
-        idPredmet: req.body.idPredmet,
-        idTipMaterijala: req.body.idTipMaterijala,
-        datumObjave: Date.now(),
-        datumIzmjene: Date.now(),
-        napomena: req.body.napomena,
-        objavljeno: typeof(req.body.objavljeno) == 'undefined' || req.body.objavljeno!='on',
-        sedmica: req.body.sedmica,
-        tipMaterijala: req.body.idTipMaterijala,
-        idAkademskaGodina: req.body.idAkademskaGodina,
-        naziv: req.body.naziv
-    }).then(function(mat){
+        let promises = []
+        db.materijal.create({
+            idPredmet: req.body.idPredmet,
+            idTipMaterijala: req.body.idTipMaterijala,
+            datumObjave: Date.now(),
+            datumIzmjene: Date.now(),
+            napomena: req.body.napomena,
+            objavljeno: req.body.objavljeno,
+            sedmica: req.body.sedmica,
+            tipMaterijala: req.body.idTipMaterijala,
+            idAkademskaGodina: req.body.idAkademskaGodina,
+            naziv: req.body.naziv
+        }).then(function(mat){
             for(let i=0; i<req.files.length; i++){
-            let file = fs.readFileSync('./uploads/'+req.files[i].originalname)
-            let noviPromise = db.datoteke.create({
-                datoteka: file,
-                naziv: req.files[i].originalname,
-                idMaterijal: mat.idMaterijal
-            })
-            promises.push(noviPromise)
+                let file = fs.readFileSync('./uploads/'+req.files[i].originalname)
+                let noviPromise = db.datoteke.create({
+                    datoteka: file,
+                    naziv: req.files[i].originalname,
+                    idMaterijal: mat.idMaterijal
+                })
+                promises.push(noviPromise)
             }
             Promise.all(promises).then(function(rez){
-                res.redirect("http://localhost:3000/Golf/stranicaPredmeta/2018%2F19/8/257")
-        })
+                let fajlovi = []
+                for(let i=0; i<rez.length; i++){
+                    fajlovi.push({id: rez[i].idDatoteke,naziv: rez[i].naziv})
+                }
+                let odgovor={
+                    id: mat.idMaterijal,
+                    naziv: mat.naziv,
+                    opis: mat.napomena,
+                    datum: mat.datumIzmjene,
+                    objavljeno: mat.objavljeno,
+                    datoteke: fajlovi
+                }
+                res.json({objava: odgovor})
             })
-})
+        }).catch(function(err){
+            let greska = {error: "error"}
+            console.log(err)
+            res.status(400)
+            res.json(greska)
+        })
+    })
 })
 
 router.post('/updateMaterijal', function(req,res){
     upload(req, res, function(err){
-    let promises = []
-    db.materijal.update({
-        datumIzmjene: Date.now(),
-        napomena: req.body.napomena,
-        objavljeno: typeof(req.body.objavljeno) == 'undefined' || req.body.objavljeno!='on',
-        naziv: req.body.naziv
-    },
-    {
-        where: {
-            idMaterijal: req.body.idMaterijal
-        }
-    }).then(function(mat){
-            for(let i=0; i<req.files.length; i++){
-            let file = fs.readFileSync('./uploads/'+req.files[i].originalname)
-            let noviPromise = db.datoteke.create({
-                datoteka: file,
-                naziv: req.files[i].originalname,
-                idMaterijal: mat.idMaterijal
-            })
-            promises.push(noviPromise)
+        let promises = []
+        db.materijal.update({
+            datumIzmjene: Date.now(),
+            napomena: req.body.napomena,
+            objavljeno: req.body.objavljeno,
+            naziv: req.body.naziv
+        },
+        {
+            where: {
+                idMaterijal: req.body.idMaterijal
             }
-            Promise.all(promises).then(function(rez){
-                res.redirect("http://localhost:3000/Golf/stranicaPredmeta/2018%2F19/8/257")
+        }).then(function(rez){
+            if(rez){
+                db.materijal.findOne({
+                    where:{
+                        idMaterijal: req.body.idMaterijal
+                    }
+                }).then(function(mat){
+                    if(mat){
+                        for(let i=0; i<req.files.length; i++){
+                            let file = fs.readFileSync('./uploads/'+req.files[i].originalname)
+                            let noviPromise = db.datoteke.create({
+                            datoteka: file,
+                            naziv: req.files[i].originalname,
+                            idMaterijal: mat.idMaterijal
+                            })
+                            promises.push(noviPromise)
+                        }
+                        Promise.all(promises).then(function(rezz){
+                            let fajlovi = []
+                            db.datoteke.findAll({
+                                where:{
+                                    idMaterijal: mat.idMaterijal
+                                }
+                            }).then(function(rez){
+                                for(let i=0; i<rez.length; i++){
+                                    fajlovi.push({id: rez[i].idDatoteke,naziv: rez[i].naziv})
+                                }
+                                let odgovor={
+                                    id: mat.idMaterijal,
+                                    naziv: mat.naziv,
+                                    opis: mat.napomena,
+                                    datum: mat.datumIzmjene,
+                                    objavljeno: mat.objavljeno,
+                                    datoteke: fajlovi
+                                }
+                                res.json({objava: odgovor})
+                            }).catch(function(err){
+                                let greska = {error: "error"}
+                                console.log(err)
+                                res.status(400)
+                                res.json(greska)
+                            })
+                
+                        }).catch(function(err){
+                            let greska = {error: "error"}
+                            console.log(err)
+                            res.status(400)
+                            res.json(greska)
+                        })
+                    }
+                    else{
+                        let greska = {error: "error"}
+                        res.status(404)
+                        res.json(greska)
+                    }
+                }).catch(function(err){
+                    let greska = {error: "error"}
+                    console.log(err)
+                    res.status(400)
+                    res.json(greska)
+                })
+            }
+            else{
+                let greska = {error: "error"}
+                res.status(404)
+                res.json(greska)
+            }
         })
-            })
-})
+    })
 })
 
 router.delete('/obrisiFile/:file', function(req,res){
     let idFile = req.params.file
-
     db.datoteke.destroy({
         where: {
             idDatoteke: idFile
         }
     }).then(function(rez){
-        res.json({obrisano:1})
+        if(rez){
+            res.json({message:"OK"})
+        }
+        else{
+            let greska = {error: "error"}
+            res.status(404)
+            res.json(greska)
+        }
+    }).catch(function(err){
+        let greska = {error: "error"}
+        console.log(err)
+        res.status(400)
+        res.json(greska)
     })
-    
+})
+
+router.get('/mozePristupiti/:naziv', function(req, res){
+
+    let naziv = decodeURIComponent(req.params.naziv)
+    db.akademskaGodina.findAll({
+        limit: 3,
+        order: [
+            ['pocetak_zimskog_semestra','DESC']
+        ],
+    }).then(function(ag){
+        let flag = false
+        for(let i=0; i<ag.length; i++){
+            if(ag[i].naziv==naziv){
+                flag=true
+                res.json({uredjivanje: "true"})
+            }
+        }
+        if(!flag){
+            res.json({uredjivanje: "false"})
+        }
+    }).catch(function(err){
+        res.status(404)
+        res.json({message: "error"})
+        console.log(err)
+    })
 })
 
 

@@ -9,14 +9,24 @@ router.get('/',function(req,res){
 router.get('/dajNaziv/:idPredmeta',function(req,res){
     let idPredmeta = req.params.idPredmeta;
     
-    db.predmet.findOne({where :{id:idPredmeta}})
+    db.predmet.findOne({
+        where: {
+            id: idPredmeta}
+        })
         .then(function(r){ 
-            
-            res.end(JSON.stringify(r));
+            if(r){
+                res.json({naziv: r.naziv})
+            }
+            else{
+                let greska = {error: "error"}
+                res.status(404)
+                res.json(greska)
+            }
         })
         .catch(function(err){
-            let greska = {privilegija:2}
-            res.end(JSON.stringify(greska))
+            let greska = {error: "error"}
+            res.status(400)
+            res.json(greska)
         });
 })
 
