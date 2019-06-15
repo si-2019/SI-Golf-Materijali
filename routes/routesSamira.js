@@ -480,9 +480,9 @@ router.post('/dodajMaterijal', function (req, res) {
 
 router.post('/updateMaterijal', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    upload(req, res, function (err) {
+        test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
 
-        upload(req, res, function (err) {
             let promises = []
             db.materijal.update({
                 datumIzmjene: Date.now(),
