@@ -1,10 +1,13 @@
 const Sequelize = require("sequelize");
-const sequelize = new Sequelize("TYQcLL35gV","TYQcLL35gV","BLysSj9ZrP",{host:'37.59.55.185',dialect:"mysql",logging:false,  port: 3306,define: {
+/*const sequelize = new Sequelize("TYQcLL35gV","TYQcLL35gV","BLysSj9ZrP",{host:'37.59.55.185',dialect:"mysql",logging:false,  port: 3306,define: {
         timestamps: false
     }
+});*/
+
+const sequelize = new Sequelize("ohmXXciFMP","ohmXXciFMP","6xmnYQrGQK",{host:'37.59.55.185',dialect:"mysql",logging:false,  port: 3306,define: {
+    timestamps: false
+}
 });
-
-
 
 const db = {}
 
