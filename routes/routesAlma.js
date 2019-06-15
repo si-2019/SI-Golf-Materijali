@@ -9,7 +9,7 @@ router.get('/', function (req, res) {
 
 router.get('/getAkademskaGodina', function (req, res) {
 
-    test(req.query.usernameGolfGolfGolf, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         db.akademskaGodina.findAll({
             limit: 3,
