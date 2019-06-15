@@ -13,7 +13,7 @@ router.get('/', function (req, res) {
 
 router.get('/uloga/:idKorisnik', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
 
         let idKorisnik = req.params.idKorisnik;
@@ -55,7 +55,7 @@ router.get('/uloga/:idKorisnik', function (req, res) {
 
 router.get('/mojiPredmeti/:idKorisnik', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let idKorisnik = req.params.idKorisnik
 
@@ -94,7 +94,7 @@ router.get('/mojiPredmeti/:idKorisnik', function (req, res) {
 
 router.get('/dajPredmeteZaNastavniAnsambl/:idKorisnika', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
 
         let idKorisnika = req.params.idKorisnika
@@ -152,7 +152,7 @@ router.get('/dajPredmeteZaNastavniAnsambl/:idKorisnika', function (req, res) {
 
 router.get('/predmeti/:ciklus/:odsjek/:semestar', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let ciklus = req.params.ciklus
         let semestar = req.params.semestar
@@ -229,7 +229,7 @@ router.get('/predmeti/:ciklus/:odsjek/:semestar', function (req, res) {
 
 router.post('/dodajMojPredmet/:idKorisnika/:idPredmeta', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let idKorisnika = req.params.idKorisnika
         let idPredmeta = req.params.idPredmeta
@@ -275,7 +275,7 @@ router.post('/dodajMojPredmet/:idKorisnika/:idPredmeta', function (req, res) {
 
 router.get('/sedmice/:semestar/:naziv', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let semestar = parseInt(req.params.semestar)
         let naziv = decodeURIComponent(req.params.naziv)
@@ -317,7 +317,7 @@ router.get('/sedmice/:semestar/:naziv', function (req, res) {
 
 router.get('/semestar/:idPredmeta', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let idPredmeta = req.params.idPredmeta
 
@@ -339,7 +339,7 @@ router.get('/semestar/:idPredmeta', function (req, res) {
 
 router.get('/nazivTrenutneAkademskeGodine', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         db.akademskaGodina.findOne({
             where: {
@@ -360,7 +360,7 @@ router.get('/nazivTrenutneAkademskeGodine', function (req, res) {
 
 router.delete('/obrisiMaterijal/:predmet/:materijal', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let idPredmeta = req.params.predmet
         let idMaterijala = req.params.materijal
@@ -390,7 +390,7 @@ router.delete('/obrisiMaterijal/:predmet/:materijal', function (req, res) {
 
 router.get('/dajFile', (req, res) => {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         db.datoteke.findOne({
             where: {
@@ -430,7 +430,7 @@ const upload = multer({
 
 router.post('/dodajMaterijal', function (req, res) {
     upload(req, res, function (err) {
-        test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+        test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
             let promises = []
             db.materijal.create({
                 idPredmet: req.body.idPredmet,
@@ -481,7 +481,7 @@ router.post('/dodajMaterijal', function (req, res) {
 router.post('/updateMaterijal', function (req, res) {
 
     upload(req, res, function (err) {
-        test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+        test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
             let promises = []
             db.materijal.update({
@@ -568,7 +568,7 @@ router.post('/updateMaterijal', function (req, res) {
 
 router.delete('/obrisiFile/:file', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
         let idFile = req.params.file
         db.datoteke.destroy({
             where: {
@@ -594,7 +594,7 @@ router.delete('/obrisiFile/:file', function (req, res) {
 
 router.get('/mozePristupiti/:naziv', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let naziv = decodeURIComponent(req.params.naziv)
         db.akademskaGodina.findAll({

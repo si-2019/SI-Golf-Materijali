@@ -11,7 +11,7 @@ router.get('/', function (req, res) {
 
 router.get('/provjera/:idKorisnika/:idPredmeta', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let idKorisnika = req.params.idKorisnika;
         let idPredmeta = req.params.idPredmeta;
@@ -40,7 +40,7 @@ router.get('/provjera/:idKorisnika/:idPredmeta', function (req, res) {
 
 router.get('/obrisi/:idKorisnika/:idPredmeta', function (req, res) {
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let idKorisnika = req.params.idKorisnika;
         let idPredmeta = req.params.idPredmeta;
@@ -64,7 +64,7 @@ router.get('/obrisi/:idKorisnika/:idPredmeta', function (req, res) {
 })
 
 router.get('/prikaziFileOPredmetu/:idPredmeta/:nazivFile', function (req, res) {
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
         let predmet = req.params.idPredmeta;
         let file = req.params.nazivFile;
         db.materijal.findAll({ where: { idPredmet: predmet, objavljeno: 1 } })

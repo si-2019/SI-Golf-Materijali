@@ -9,7 +9,7 @@ router.get('/',function(req,res){
 });
 
 router.get('/dajPrivilegije/:idKorisnika/:idPredmeta',function(req,res){
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
         let idKorisnika = req.params.idKorisnika;
         let idPredmeta = req.params.idPredmeta;
         db.predmet.findOne({where :{id:idPredmeta}}).then(function(p){ 
@@ -31,7 +31,7 @@ router.get('/dajPrivilegije/:idKorisnika/:idPredmeta',function(req,res){
 
 router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica/:naziv', function(req,res){
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
         let predmet = req.params.idPredmet
         let sedmica = req.params.sedmica
         let naziv = decodeURIComponent(req.params.naziv)
@@ -96,7 +96,7 @@ router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica/:naziv', function(req,r
 
 router.get('/dajMaterijaleZaProfesora/:idPredmet/:sedmica/:naziv', function(req,res){
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let predmet = req.params.idPredmet
         let sedmica = req.params.sedmica
@@ -225,7 +225,7 @@ router.get('/dajLiteraturuZaStudenta/:idPredmet/:naziv', function(req, res){
 
 router.get('/dajLiteraturuZaProfesora/:idPredmet/:naziv', function(req, res){
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let predmet = req.params.idPredmet
         let naziv = decodeURIComponent(req.params.naziv)
@@ -291,7 +291,7 @@ router.get('/dajLiteraturuZaProfesora/:idPredmet/:naziv', function(req, res){
 
 router.get('/dajOPredmetu/:idPredmet/:naziv', function(req, res){
 
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let predmet = req.params.idPredmet
         let naziv = decodeURIComponent(req.params.naziv)

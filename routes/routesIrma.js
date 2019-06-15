@@ -9,7 +9,7 @@ router.get('/', function (req, res) {
 });
 
 router.get('/dajNaziv/:idPredmeta', function (req, res) {
-    test(req.query.username, req.header('Authorization'), req, res, (req, res) => {
+    test(req.query.usernameGolf, req.header('Authorization'), req, res, (req, res) => {
 
         let idPredmeta = req.params.idPredmeta;
 
