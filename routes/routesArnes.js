@@ -67,7 +67,7 @@ router.get('/dajMaterijaleZaStudenta/:idPredmet/:sedmica/:naziv', function(req,r
                         for(let i=0; i<datoteke.length;i++){
                             let files = []
                             for(let j=0; j<datoteke[i].length; j++){
-                                files.push(datoteke[i][j].naziv)
+                                files.push({id: datoteke[i][j].idDatoteke,naziv: datoteke[i][j].naziv})
                             }
                             objave.push({
                                 id:materijali[i].idMaterijal,
